@@ -1,9 +1,8 @@
-import random
 from typing import Callable, Iterable
 
+import gym
 import torch as t
 import torch.nn as nn
-import gym
 import tqdm as tqdm
 
 
@@ -36,7 +35,16 @@ class HebbianLayer(nn.Module):
         return post
 
     def update(self, pre, post):
-        self.W += self.eta * (self.A * (pre[:, None] @ post[None, :]) + self.B @ pre + self.C @ post + self.D)
+        # A: (pre, post)
+        # B: (pre, )
+        # C: (post, )
+        # D: (pre, post)
+        # W: (pre, post)
+        # eta: (pre, post)
+        # pre: (pre, )
+        # post: (post, )
+
+        self.W += self.eta * (self.A * (pre[:, None] @ post[None, :]) + self.B * pre + self.C * post + self.D)
 
 
 class HebbianAgent:
