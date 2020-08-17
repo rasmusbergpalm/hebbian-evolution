@@ -44,7 +44,12 @@ class HebbianLayer(nn.Module):
         # pre: (pre, )
         # post: (post, )
 
-        self.W += self.eta * (self.A * (pre[:, None] @ post[None, :]) + self.B * pre + self.C * post + self.D)
+        self.W += self.eta * (
+                self.A * (pre[:, None] @ post[None, :]) +
+                (self.B * pre)[:, None] +
+                (self.C * post)[None, :] +
+                self.D
+        )
 
 
 class HebbianAgent:
