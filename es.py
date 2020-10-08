@@ -11,6 +11,9 @@ class Individual:
 
 
 class PopulationDistribution:
+    def parameters(self) -> Iterable[t.Tensor]:
+        raise NotImplementedError
+
     def sample(self, n) -> Iterable[Individual]:
         raise NotImplementedError
 
@@ -31,7 +34,7 @@ def es_grads(
     population = pop_dist.sample(pop_size)
     pop_fitness = pool.map(fitness_fn_no_grad, population)
     t.mean(t.stack([(-ind_fitness * pop_dist.log_prob(ind)) for ind, ind_fitness in zip(population, pop_fitness)])).backward()
-    return sum(pop_fitness)/pop_size
+    return sum(pop_fitness) / pop_size
 
 
 def evolve(

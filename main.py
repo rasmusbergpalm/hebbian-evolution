@@ -4,11 +4,11 @@ from typing import Dict, Iterable
 import gym
 import torch as t
 import torch.nn as nn
-from torch.distributions import Normal
 import tqdm
-from torch.optim import SGD, Adam
+from torch.distributions import Normal
+from torch.optim import SGD
 
-from es import evolve, PopulationDistribution, Individual, es_grads
+from es import PopulationDistribution, Individual, es_grads
 from hebbian_layer import HebbianLayer
 
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     pop_size = 200
     pool = Pool(8)
 
-    optim = Adam(pop_dist.parameters(), lr=0.1)
+    optim = SGD(pop_dist.parameters(), lr=0.2)
     pbar = tqdm.tqdm(range(iterations))
     for _ in pbar:
         optim.zero_grad()
