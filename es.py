@@ -5,6 +5,35 @@ import tqdm
 from torch.multiprocessing import Pool
 
 
+class Individual:
+    def fitness(self) -> float:
+        raise NotImplementedError
+
+
+class PopulationDistribution:
+    def sample(self, n) -> Iterable[Individual]:
+        raise NotImplementedError
+
+    def log_prob(self, individual: Individual) -> float:
+        raise NotImplementedError
+
+
+def fitness_fn_no_grad(ind: Individual):
+    with t.no_grad():
+        return ind.fitness()
+
+
+def es_grads(
+        pop_dist: PopulationDistribution,
+        pop_size: int,
+        pool: Pool
+):
+    population = pop_dist.sample(pop_size)
+    pop_fitness = pool.map(fitness_fn_no_grad, population)
+    t.mean(t.stack([(-ind_fitness * pop_dist.log_prob(ind)) for ind, ind_fitness in zip(population, pop_fitness)])).backward()
+    return sum(pop_fitness)/pop_size
+
+
 def evolve(
         fitness_fn: Callable[[Iterable[t.Tensor]], float],
         initial: Iterable[t.Tensor],
