@@ -18,13 +18,13 @@ if __name__ == '__main__':
     learning_rate = 0.2
     iterations = 300
     pop_size = 200
-    pool = Pool(8)
 
     optim = SGD(population.parameters(), lr=learning_rate)
     pbar = tqdm.tqdm(range(iterations))
     for i in pbar:
         optim.zero_grad()
-        avg_fitness = es_grads(population, pop_size, pool)
+        with Pool(8) as pool:
+            avg_fitness = es_grads(population, pop_size, pool)
         train_writer.add_scalar('fitness', avg_fitness, i)
         optim.step()
         pbar.set_description("avg fit: %.3f" % avg_fitness)
