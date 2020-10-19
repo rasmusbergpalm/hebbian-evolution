@@ -15,7 +15,7 @@ if __name__ == '__main__':
     scale = 1.0
     population = NormalHebbianPopulation(scale)
 
-    learning_rate = 0.2
+    learning_rate = 1.0
     iterations = 300
     pop_size = 200
 
