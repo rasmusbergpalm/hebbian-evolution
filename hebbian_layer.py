@@ -5,7 +5,7 @@ import shapeguard
 
 class HebbianLayer(nn.Module):
 
-    def __init__(self, n_in, n_out, activation_fn, learn_init=True):
+    def __init__(self, n_in, n_out, activation_fn, learn_init=False):
         super().__init__()
         self.n_in = n_in
         self.n_out = n_out
@@ -17,11 +17,7 @@ class HebbianLayer(nn.Module):
         else:
             self.W = t.randn((self.n_in, self.n_out))
 
-        self.A = nn.Parameter(t.randn((n_in, n_out)))
-        self.B = nn.Parameter(t.randn((n_in,)))
-        self.C = nn.Parameter(t.randn((n_out,)))
-        self.D = nn.Parameter(t.randn((n_in, n_out)))
-        self.eta = nn.Parameter(t.randn((n_in, n_out)))
+        self.h = nn.Parameter(t.randn((n_in, n_out, 5)))
         self.activation_fn = activation_fn
 
     def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
@@ -41,9 +37,10 @@ class HebbianLayer(nn.Module):
         pre.sg((self.n_in,))
         post.sg((self.n_out,))
 
-        self.W += self.eta * (
-                self.A * (pre[:, None] @ post[None, :]).sg((self.n_in, self.n_out)) +
-                (self.B * pre)[:, None].sg((self.n_in, 1)) +
-                (self.C * post)[None, :].sg((1, self.n_out)) +
-                self.D
+        eta, A, B, C, D = [v.squeeze().sg((self.n_in, self.n_out)) for v in self.h.split(1, -1)]
+        self.W += eta * (
+                A * (pre[:, None] @ post[None, :]).sg((self.n_in, self.n_out)) +
+                (B * pre[:, None]).sg((self.n_in, self.n_out)) +
+                (C * post[None, :]).sg((self.n_in, self.n_out)) +
+                D
         )

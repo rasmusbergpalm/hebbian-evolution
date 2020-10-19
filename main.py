@@ -1,93 +1,31 @@
 from multiprocessing.pool import Pool
-from typing import Dict, Iterable
 
-import gym
 import torch as t
-import torch.nn as nn
 import tqdm
-from torch.distributions import Normal
 from torch.optim import SGD
 
-from es import PopulationDistribution, Individual, es_grads
-from hebbian_layer import HebbianLayer
-
-
-class HebbianAgent(Individual):
-    def __init__(self, ):
-        self.env = gym.make("LunarLander-v2")
-        n_in, n_out = 8, 4
-        self.net = nn.Sequential(
-            HebbianLayer(n_in, n_out, t.nn.Softmax(dim=0), learn_init=False),
-        )
-
-    @staticmethod
-    def from_params(params: Dict[str, t.Tensor]) -> 'HebbianAgent':
-        agent = HebbianAgent()
-        agent.net.load_state_dict(params)
-        return agent
-
-    def fitness(self, render=False) -> float:
-        obs = self.env.reset()
-        done = False
-        r_tot = 0
-        while not done:
-            action = self.action(obs)
-            obs, r, done, info = self.env.step(action)
-            r_tot += r
-            if render:
-                self.env.render()
-
-        return r_tot
-
-    def get_params(self) -> Dict[str, t.Tensor]:
-        return self.net.state_dict()
-
-    def action(self, obs):
-        with t.no_grad():
-            return t.argmax(self.net(t.tensor(obs, dtype=t.float32))).item()
-
-
-"""
-if __name__ == '__main__':
-    good = t.load('good.t')
-    for i in range(100):
-        HebbianAgent.from_params(good).fitness(render=True)
-"""
-
-
-class HebbianPopulationDistribution(PopulationDistribution):
-    def __init__(self, parameter_distributions: Dict[str, t.distributions.Normal]):
-        self.parameter_distributions = parameter_distributions
-
-    def parameters(self) -> Iterable[t.Tensor]:
-        return [p.mean for p in self.parameter_distributions.values()]
-
-    def sample(self, n) -> Iterable[HebbianAgent]:
-        return [
-            HebbianAgent.from_params({
-                k: dist.sample() for k, dist in self.parameter_distributions.items()
-            })
-            for _ in range(n)
-        ]
-
-    def log_prob(self, individual: HebbianAgent) -> float:
-        return sum([self.parameter_distributions[k].log_prob(p).sum() for k, p in individual.get_params().items()])
-
+from es import es_grads
+from gmm_hebbian_population import GMMHebbianPopulation
+from normal_hebbian_population import NormalHebbianPopulation
+from util import get_writers
 
 if __name__ == '__main__':
-    sigma = 1.0
-    pop_dist = HebbianPopulationDistribution({k: Normal(t.zeros(v.shape, requires_grad=True), sigma) for k, v in HebbianAgent().get_params().items()})
+    train_writer, test_writer = get_writers('hebbian')
 
-    iterations = 100
+    scale = 1.0
+    population = NormalHebbianPopulation(scale)
+
+    learning_rate = 0.2
+    iterations = 300
     pop_size = 200
     pool = Pool(8)
 
-    optim = SGD(pop_dist.parameters(), lr=0.2)
+    optim = SGD(population.parameters(), lr=learning_rate)
     pbar = tqdm.tqdm(range(iterations))
-    for _ in pbar:
+    for i in pbar:
         optim.zero_grad()
-        avg_fitness = es_grads(pop_dist, pop_size, pool)
+        avg_fitness = es_grads(population, pop_size, pool)
+        train_writer.add_scalar('fitness', avg_fitness, i)
         optim.step()
         pbar.set_description("avg fit: %.3f" % avg_fitness)
-        # ind = pop_dist.sample(1)[0]
-        # ind.fitness(render=True)
+        t.save(optim.state_dict(), 'latest.t')

@@ -1,3 +1,3 @@
 # hebbian-evolution
 
-Minimal code to solve the simple cartpole environment using hebbian meta learning as seen in https://arxiv.org/pdf/2007.02686.pdf
+Code to test the genomic bottleneck hypothesis in hebbian meta learning
