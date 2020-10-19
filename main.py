@@ -4,13 +4,13 @@ import torch as t
 import tqdm
 from torch.optim import SGD
 
+import util
 from es import es_grads
 from gmm_hebbian_population import GMMHebbianPopulation
 from normal_hebbian_population import NormalHebbianPopulation
-from util import get_writers
 
 if __name__ == '__main__':
-    train_writer, test_writer = get_writers('hebbian')
+    train_writer, test_writer = util.get_writers('hebbian')
 
     scale = 0.1
     population = NormalHebbianPopulation(scale)
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     for i in pbar:
         optim.zero_grad()
         with Pool(8) as pool:
-            avg_fitness = es_grads(population, pop_size, pool)
+            avg_fitness = es_grads(population, pop_size, pool, util.compute_centered_ranks)
         train_writer.add_scalar('fitness', avg_fitness, i)
         optim.step()
         pbar.set_description("avg fit: %.3f" % avg_fitness)
