@@ -12,7 +12,7 @@ from util import get_writers
 if __name__ == '__main__':
     train_writer, test_writer = get_writers('hebbian')
 
-    scale = 0.2
+    scale = 0.1
     population = NormalHebbianPopulation(scale)
 
     learning_rate = 0.2

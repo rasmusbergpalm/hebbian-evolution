@@ -9,18 +9,20 @@ from hebbian_agent import HebbianAgent
 
 class NormalHebbianPopulation(Population):
     def __init__(self, scale):
-        self.p_h = {k: d.Normal(loc=t.randn(v.shape, requires_grad=True), scale=scale) for k, v in HebbianAgent().get_params().items()}
+        self.scale = scale
+        self.learning_rule_means = {k: t.randn(v.shape, requires_grad=True) for k, v in HebbianAgent().get_params().items()}
 
     def parameters(self) -> Iterable[t.Tensor]:
-        return [p.mean for p in self.p_h.values()]
+        return list(self.learning_rule_means.values())
 
     def sample(self, n) -> Iterable[HebbianAgent]:
-        return [
-            HebbianAgent.from_params({
-                k: dist.sample() for k, dist in self.p_h.items()
-            })
-            for _ in range(n)
-        ]
+        agents = []
+        for _ in range(n // 2):
+            noise = {k: d.Normal(loc=t.zeros_like(v), scale=self.scale).sample() for k, v in self.learning_rule_means.items()}
+            agents.append(HebbianAgent.from_params({k: self.learning_rule_means[k] + n for k, n in noise.items()}))
+            agents.append(HebbianAgent.from_params({k: self.learning_rule_means[k] - n for k, n in noise.items()}))
+
+        return agents
 
     def log_prob(self, individual: HebbianAgent) -> float:
-        return sum([self.p_h[k].log_prob(p).sum() for k, p in individual.get_params().items()])
+        return sum([d.Normal(self.learning_rule_means[k], scale=self.scale).log_prob(p).sum() for k, p in individual.get_params().items()])
