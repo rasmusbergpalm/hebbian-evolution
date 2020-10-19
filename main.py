@@ -12,10 +12,10 @@ from util import get_writers
 if __name__ == '__main__':
     train_writer, test_writer = get_writers('hebbian')
 
-    scale = 1.0
+    scale = 0.2
     population = NormalHebbianPopulation(scale)
 
-    learning_rate = 1.0
+    learning_rate = 0.2
     iterations = 300
     pop_size = 200
 
