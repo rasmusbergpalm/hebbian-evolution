@@ -17,6 +17,7 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
+
     optim = SGD(population.parameters(), lr=learning_rate)
     pbar = tqdm.tqdm(range(iterations))
     for i in pbar:
