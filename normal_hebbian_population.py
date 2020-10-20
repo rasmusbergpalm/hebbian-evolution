@@ -26,3 +26,9 @@ class NormalHebbianPopulation(Population):
 
     def log_prob(self, individual: HebbianAgent) -> float:
         return sum([d.Normal(self.learning_rule_means[k], scale=self.scale).log_prob(p).sum() for k, p in individual.get_params().items()])
+
+    def load(self, fname):
+        self.learning_rule_means = t.load(fname)
+
+    def save(self, fname):
+        t.save(self.learning_rule_means, fname)

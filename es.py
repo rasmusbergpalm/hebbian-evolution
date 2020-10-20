@@ -19,6 +19,12 @@ class Population:
     def log_prob(self, individual: Individual) -> float:
         raise NotImplementedError
 
+    def save(self, fname):
+        raise NotImplementedError
+
+    def load(self, fname):
+        raise NotImplementedError
+
 
 def _fitness_fn_no_grad(ind: Individual):
     with t.no_grad():

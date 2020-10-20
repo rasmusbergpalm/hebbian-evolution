@@ -1,12 +1,10 @@
 from multiprocessing.pool import Pool
 
-import torch as t
 import tqdm
 from torch.optim import SGD
 
 import util
 from es import es_grads
-from gmm_hebbian_population import GMMHebbianPopulation
 from normal_hebbian_population import NormalHebbianPopulation
 
 if __name__ == '__main__':
@@ -28,4 +26,4 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness', avg_fitness, i)
         optim.step()
         pbar.set_description("avg fit: %.3f" % avg_fitness)
-        t.save(optim.state_dict(), 'latest.t')
+        population.save('latest.t')
