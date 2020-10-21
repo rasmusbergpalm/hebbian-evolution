@@ -13,9 +13,9 @@ if __name__ == '__main__':
 
     scale = 0.1
     num_learning_rules = 8
-    population = GMMHebbianPopulation(8, scale)
+    population = GMMHebbianPopulation(num_learning_rules, scale)
 
-    learning_rate = 0.2
+    learning_rate = 0.4
     iterations = 300
     pop_size = 200
 
