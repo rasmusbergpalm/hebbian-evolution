@@ -16,7 +16,7 @@ class Population:
     def sample(self, n) -> Iterable[Individual]:
         raise NotImplementedError
 
-    def log_prob(self, individual: Individual) -> float:
+    def log_prob(self, individual: Individual) -> t.Tensor:
         raise NotImplementedError
 
     def save(self, fname):
