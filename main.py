@@ -19,7 +19,7 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
-    optim = Adam(population.parameters(), learning_rate=learning_rate)
+    optim = Adam(population.parameters(), lr=learning_rate)
     pbar = tqdm.tqdm(range(iterations))
     for i in pbar:
         optim.zero_grad()
