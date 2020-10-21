@@ -12,7 +12,7 @@ if __name__ == '__main__':
     train_writer, test_writer = util.get_writers('hebbian')
 
     scale = 0.1
-    num_learning_rules = 16
+    num_learning_rules = 8
     population = GMMHebbianPopulation(num_learning_rules, scale)
 
     learning_rate = 0.1
