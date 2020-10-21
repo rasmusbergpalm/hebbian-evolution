@@ -1,7 +1,7 @@
 from multiprocessing.pool import Pool
 
 import tqdm
-from torch.optim import SGD
+from torch.optim import SGD, Adam
 
 import util
 from es import es_grads
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
-    optim = SGD(population.parameters(), lr=learning_rate)
+    optim = Adam(population.parameters())
     pbar = tqdm.tqdm(range(iterations))
     for i in pbar:
         optim.zero_grad()
