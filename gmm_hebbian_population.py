@@ -31,7 +31,7 @@ class GMMHebbianPopulation(Population):
             for _ in range(n)
         ]
 
-    def log_prob(self, individual: HebbianAgent) -> float:
+    def log_prob(self, individual: HebbianAgent) -> t.Tensor:
         log_p_h = 0.0
 
         for key, h in individual.get_params().items():
