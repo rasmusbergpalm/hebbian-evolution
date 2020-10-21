@@ -26,7 +26,8 @@ if __name__ == '__main__':
         with Pool(8) as pool:
             avg_fitness = es_grads(population, pop_size, pool, util.compute_centered_ranks)
         train_writer.add_scalar('fitness', avg_fitness, i)
-        train_writer.add_scalar('entropy', population.average_mixing_entroy())
+        for key, ent in population.average_mixing_entroy().items():
+            train_writer.add_scalar('entropy/%s' % key, ent)
         optim.step()
         pbar.set_description("avg fit: %.3f" % avg_fitness)
         population.save('latest.t')
