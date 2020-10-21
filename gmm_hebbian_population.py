@@ -9,7 +9,7 @@ from hebbian_agent import HebbianAgent
 
 class GMMHebbianPopulation(Population):
     def __init__(self, num_learning_rules: int, scale=float):
-        mixing_logits_tensors = {k: t.tensor(10*t.randn(v.shape[:-1] + (num_learning_rules,)), requires_grad=True) for k, v in HebbianAgent().get_params().items()}
+        mixing_logits_tensors = {k: t.tensor(1000*t.randn(v.shape[:-1] + (num_learning_rules,)), requires_grad=True) for k, v in HebbianAgent().get_params().items()}
         learning_rule_cluster_means = t.randn((num_learning_rules, 5), requires_grad=True)
         self.mixing_logits_tensors = mixing_logits_tensors
         self.learning_rule_cluster_means = learning_rule_cluster_means.sg(("M", 5))
