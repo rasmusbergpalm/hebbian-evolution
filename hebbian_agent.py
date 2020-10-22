@@ -13,8 +13,10 @@ class HebbianAgent(Individual):
         self.env = gym.make("LunarLander-v2")
         n_in, n_hid, n_out = 8, 32, 4
         self.net = nn.Sequential(
-            HebbianLayer(n_in, n_hid, t.nn.Tanh()),
-            HebbianLayer(n_hid, n_out, t.nn.Softmax(dim=0)),
+            nn.Linear(n_in, n_hid), nn.Tanh(),
+            nn.Linear(n_hid, n_out), nn.Softmax(dim=0)
+            # HebbianLayer(n_in, n_hid, t.nn.Tanh()),
+            # HebbianLayer(n_hid, n_out, t.nn.Softmax(dim=0)),
         )
 
     @staticmethod
