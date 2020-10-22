@@ -20,6 +20,9 @@ class HebbianLayer(nn.Module):
         self.h = nn.Parameter(t.randn((n_in, n_out, 5)))
         self.activation_fn = activation_fn
 
+    def get_weights(self):
+        return self.W + 0
+
     def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
         super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs)
         if self.learn_init:
