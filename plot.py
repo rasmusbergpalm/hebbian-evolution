@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 
 from gmm_hebbian_population import GMMHebbianPopulation
 from hebbian_agent import HebbianAgent
+import os
+import shutil
 
-num_learning_rules = 8
+num_learning_rules = 2
 scale = 0.1
 population = GMMHebbianPopulation(num_learning_rules, scale)
-population.load("80c8762.t")
+population.load("e81cd36.t")
 
 for k, ml in population.mixing_logits_tensors.items():
     plt.figure()
@@ -24,6 +26,8 @@ obs = env.reset()
 done = False
 r_tot = 0
 
+shutil.rmtree("./plots", ignore_errors=True)
+os.mkdir("plots")
 i = 0
 while not done:
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, gridspec_kw={
