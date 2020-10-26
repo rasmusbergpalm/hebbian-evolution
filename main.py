@@ -23,7 +23,7 @@ if __name__ == '__main__':
     pbar = tqdm.tqdm(range(iterations))
     for i in pbar:
         optim.zero_grad()
-        with Pool(8) as pool:
+        with Pool(1) as pool:
             rft = es_grads(population, pop_size, pool, util.compute_centered_ranks)
 
         avg_fit = rft.mean()
