@@ -12,9 +12,10 @@ from normal_hebbian_population import NormalHebbianPopulation
 if __name__ == '__main__':
     train_writer, test_writer = util.get_writers('hebbian')
 
-    scale = 0.1
+    scale = 0.0
     num_learning_rules = 2
     population = NormalHebbianPopulation(scale)
+    population.load("../678b209/latest.t")
 
     learning_rate = 0.1
     iterations = 30_000
