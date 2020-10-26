@@ -8,7 +8,6 @@ from es import es_grads
 from gmm_hebbian_population import GMMHebbianPopulation
 from normal_hebbian_population import NormalHebbianPopulation
 
-
 if __name__ == '__main__':
     train_writer, test_writer = util.get_writers('hebbian')
 
