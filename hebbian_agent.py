@@ -10,7 +10,6 @@ from hebbian_layer import HebbianLayer
 
 class HebbianAgent(Individual):
     def __init__(self, ):
-        self.env = gym.make("LunarLander-v2")
         n_in, n_hid, n_out = 8, 32, 4
         self.net = nn.Sequential(
             nn.Linear(n_in, n_hid), nn.Tanh(),
@@ -29,15 +28,16 @@ class HebbianAgent(Individual):
         return {k: c.weight for k, c in self.net.named_children() if k in {'0', '2'}}
 
     def fitness(self, render=False) -> float:
-        obs = self.env.reset()
+        env = gym.make("LunarLander-v2")
+        obs = env.reset()
         done = False
         r_tot = 0
         while not done:
             action = self.action(obs)
-            obs, r, done, info = self.env.step(action)
+            obs, r, done, info = env.step(action)
             r_tot += r
             if render:
-                self.env.render()
+                env.render()
 
         return r_tot
 
