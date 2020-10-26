@@ -26,7 +26,7 @@ class HebbianAgent(Individual):
         return agent
 
     def get_weights(self):
-        return {k: c.get_weights() for k, c in self.net.named_children()}
+        return {k: c.weight for k, c in self.net.named_children() if k in {'0', '2'}}
 
     def fitness(self, render=False) -> float:
         obs = self.env.reset()

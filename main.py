@@ -15,9 +15,8 @@ if __name__ == '__main__':
     num_learning_rules = 2
     population = NormalHebbianPopulation(scale)
 
-
     learning_rate = 0.1
-    iterations = 300
+    iterations = 30_000
     pop_size = 200
 
     optim = Adam(population.parameters(), lr=learning_rate)
@@ -25,11 +24,16 @@ if __name__ == '__main__':
     for i in pbar:
         optim.zero_grad()
         with Pool(8) as pool:
-            avg_fitness = es_grads(population, pop_size, pool, util.compute_centered_ranks)
+            rft = es_grads(population, pop_size, pool, util.compute_centered_ranks)
 
-        train_writer.add_scalar('fitness', avg_fitness, i)
+        avg_fit = rft.mean()
+        train_writer.add_scalar('fitness', avg_fit, i)
+        train_writer.add_scalar('fitness/std', rft.std(), i)
         # for key, ent in population.average_mixing_entroy().items():
         #   train_writer.add_scalar('entropy/%s' % key, ent, i)
         optim.step()
-        pbar.set_description("avg fit: %.3f" % avg_fitness)
+        pbar.set_description("avg fit: %.3f, std: %.3f" % (avg_fit.item(), rft.std().item()))
         population.save('latest.t')
+        if avg_fit > 200:
+            print("Solved.")
+            break

@@ -6,11 +6,13 @@ from hebbian_agent import HebbianAgent
 import os
 import shutil
 
+from normal_hebbian_population import NormalHebbianPopulation
+
 num_learning_rules = 2
 scale = 0.1
-population = GMMHebbianPopulation(num_learning_rules, scale)
-population.load("e81cd36.t")
-
+population = NormalHebbianPopulation(scale)
+population.load("7bae779.t")
+"""
 for k, ml in population.mixing_logits_tensors.items():
     plt.figure()
     plt.imshow(ml.detach().numpy().argmax(axis=-1))
@@ -18,8 +20,9 @@ for k, ml in population.mixing_logits_tensors.items():
     plt.colorbar()
     plt.savefig('assignments-%s.png' % k)
     plt.close()
+"""
 
-agent: HebbianAgent = population.sample(1)[0]
+agent: HebbianAgent = population.sample(2)[0]
 
 env = gym.make("LunarLander-v2")
 obs = env.reset()
@@ -29,6 +32,7 @@ r_tot = 0
 shutil.rmtree("./plots", ignore_errors=True)
 os.mkdir("plots")
 i = 0
+rsum = 0
 while not done:
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, gridspec_kw={
         'width_ratios': [0.6, 0.2, 0.2]
@@ -49,5 +53,7 @@ while not done:
 
     action = agent.action(obs)
     obs, r, done, info = env.step(action)
+    rsum += r
 
     i += 1
+print(rsum)
