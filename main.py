@@ -1,4 +1,4 @@
-from multiprocessing.pool import Pool
+from torch.multiprocessing.pool import Pool
 
 import tqdm
 from torch.optim import Adam
