@@ -41,7 +41,7 @@ def es_grads(
     if pool is not None:
         raw_fitness = pool.map(_fitness_fn_no_grad, population)
     else:
-        raw_fitness = map(_fitness_fn_no_grad, population)
+        raw_fitness = list(map(_fitness_fn_no_grad, population))
 
     pop_fitness = fitness_shaping_fn(raw_fitness)
     t.mean(t.stack([(-ind_fitness * pop_dist.log_prob(ind)) for ind, ind_fitness in zip(population, pop_fitness)])).backward()
