@@ -39,7 +39,7 @@ def es_grads(
 ):
     population = pop_dist.sample(pop_size)
     if pool is not None:
-        raw_fitness = pool.map(_fitness_fn_no_grad, population)
+        raw_fitness = pool.imap(_fitness_fn_no_grad, population)
     else:
         raw_fitness = list(map(_fitness_fn_no_grad, population))
 
