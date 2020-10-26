@@ -39,6 +39,7 @@ class HebbianAgent(Individual):
             if render:
                 env.render()
 
+        env.close()
         return r_tot
 
     def get_params(self) -> Dict[str, t.Tensor]:
