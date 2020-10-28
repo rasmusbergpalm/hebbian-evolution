@@ -34,10 +34,12 @@ class StaticCarRacingAgent(Individual):
         obs = env.reset()
         done = False
         r_tot = 0
-        while not done:
+        neg_r = 0
+        while not done and neg_r < 20:
             action = self.action(obs)
             obs, r, done, info = env.step(action)
             r_tot += r
+            neg_r = neg_r + 1 if r < 0 else 0
             if render:
                 env.render()
 
