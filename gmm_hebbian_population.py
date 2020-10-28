@@ -4,12 +4,12 @@ import torch as t
 import torch.distributions as d
 
 from es import Population
-from hebbian_agent import HebbianAgent
+from hebbian_agent import StaticLunarLanderAgent
 
 
 class GMMHebbianPopulation(Population):
     def __init__(self, num_learning_rules: int, scale=float):
-        mixing_logits_tensors = {k: t.randn(v.shape[:-1] + (num_learning_rules,), requires_grad=True) for k, v in HebbianAgent().get_params().items()}
+        mixing_logits_tensors = {k: t.randn(v.shape[:-1] + (num_learning_rules,), requires_grad=True) for k, v in StaticLunarLanderAgent().get_params().items()}
         learning_rule_cluster_means = t.randn((num_learning_rules, 5), requires_grad=True)
         self.mixing_logits_tensors = mixing_logits_tensors
         self.learning_rule_cluster_means = learning_rule_cluster_means.sg(("M", 5))
@@ -21,9 +21,9 @@ class GMMHebbianPopulation(Population):
     def parameters(self) -> Iterable[t.Tensor]:
         return list(self.mixing_logits_tensors.values()) + [self.learning_rule_cluster_means]
 
-    def sample(self, n) -> Iterable[HebbianAgent]:
+    def sample(self, n) -> Iterable[StaticLunarLanderAgent]:
         return [
-            HebbianAgent.from_params({
+            StaticLunarLanderAgent.from_params({
                 key: d.Normal(loc=self.learning_rule_cluster_means[d.Categorical(logits=mixing_logits_tensor).sample()], scale=self.scale).sample()
                 for key, mixing_logits_tensor
                 in self.mixing_logits_tensors.items()
@@ -31,7 +31,7 @@ class GMMHebbianPopulation(Population):
             for _ in range(n)
         ]
 
-    def log_prob(self, individual: HebbianAgent) -> t.Tensor:
+    def log_prob(self, individual: StaticLunarLanderAgent) -> t.Tensor:
         log_p_h = 0.0
 
         for key, h in individual.get_params().items():

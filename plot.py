@@ -2,7 +2,7 @@ import gym
 import matplotlib.pyplot as plt
 
 from gmm_hebbian_population import GMMHebbianPopulation
-from hebbian_agent import HebbianAgent
+from hebbian_agent import StaticLunarLanderAgent
 import os
 import shutil
 
@@ -22,7 +22,7 @@ for k, ml in population.mixing_logits_tensors.items():
     plt.close()
 """
 
-agent: HebbianAgent = population.sample(2)[0]
+agent: StaticLunarLanderAgent = population.sample(2)[0]
 
 env = gym.make("LunarLander-v2")
 obs = env.reset()
