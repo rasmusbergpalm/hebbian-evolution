@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     learning_rate = 0.1
     iterations = 30_000
-    pop_size = 3
+    pop_size = 200
 
     optim = Adam(population.parameters(), lr=learning_rate)
     pbar = tqdm.tqdm(range(iterations))
