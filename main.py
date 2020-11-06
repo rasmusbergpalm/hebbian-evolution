@@ -1,18 +1,19 @@
+import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method
 from torch.optim import Adam
-import torch as t
+
 import util
-from static_car import StaticCarRacingAgent
+from rnn_car import RecurrentCarRacingAgent
 
 if __name__ == '__main__':
     set_start_method('spawn')
     train_writer, test_writer = util.get_writers('hebbian')
 
-    agent = StaticCarRacingAgent()
+    agent = RecurrentCarRacingAgent()
     shapes = {k: p.shape for k, p in agent.get_params().items()}
-    population = NormalPopulation(shapes, StaticCarRacingAgent.from_params, std=0.1)
+    population = NormalPopulation(shapes, RecurrentCarRacingAgent.from_params, std=0.1)
 
     iterations = 30_000
     pop_size = 200
