@@ -5,7 +5,7 @@ import torch as t
 from gym.wrappers import *
 from torch import nn
 
-from es import Individual
+from evostrat import Individual
 import shapeguard
 
 

@@ -1,17 +1,11 @@
 import gym
 import matplotlib.pyplot as plt
 
-from gmm_hebbian_population import GMMHebbianPopulation
-from hebbian_agent import StaticLunarLanderAgent
+# from gmm_hebbian_population import GMMHebbianPopulation
+
 import os
 import shutil
 
-from normal_hebbian_population import NormalHebbianPopulation
-
-num_learning_rules = 2
-scale = 0.1
-population = NormalHebbianPopulation(scale)
-population.load("7bae779.t")
 """
 for k, ml in population.mixing_logits_tensors.items():
     plt.figure()
@@ -22,7 +16,7 @@ for k, ml in population.mixing_logits_tensors.items():
     plt.close()
 """
 
-agent: StaticLunarLanderAgent = population.sample(2)[0]
+# agent: StaticLunarLanderAgent = population.sample(2)[0]
 
 env = gym.make("LunarLander-v2")
 obs = env.reset()
