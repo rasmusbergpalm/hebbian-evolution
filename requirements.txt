@@ -1,3 +1,4 @@
+evostrat==1.1.1
 absl-py==0.10.0
 box2d-py==2.3.8
 cachetools==4.1.1

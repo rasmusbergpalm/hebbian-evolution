@@ -2,7 +2,7 @@ import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method
 from torch.optim import Adam
-
+import torch as t
 import util
 from static_car import StaticCarRacingAgent
 
@@ -29,5 +29,6 @@ if __name__ == '__main__':
         optim.step()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (raw_fitness.mean().item(), raw_fitness.std().item()))
         if raw_fitness.mean() > 700:
+            t.save(population.parameters(), 'sol.t')
             print("Solved.")
             break
