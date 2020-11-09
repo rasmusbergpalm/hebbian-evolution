@@ -7,6 +7,7 @@ from torch.optim import Adam
 import util
 from meta_agent import MetaAgent
 from rnn_car import RecurrentCarRacingAgent
+import envs
 
 if __name__ == '__main__':
     set_start_method('spawn')
@@ -23,7 +24,6 @@ if __name__ == '__main__':
 
     def constructor(params) -> MetaAgent:
         return MetaAgent([RecurrentCarRacingAgent.from_params(params, env_arg) for env_arg in env_args])
-
 
 
     agent = RecurrentCarRacingAgent(env_args[0])
