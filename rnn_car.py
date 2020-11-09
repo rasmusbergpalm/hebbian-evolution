@@ -2,11 +2,9 @@ from typing import Dict
 
 import gym
 import torch as t
+from evostrat import Individual
 from gym.wrappers import *
 from torch import nn
-
-from evostrat import Individual
-import shapeguard
 
 
 class RecurrentCarRacingPolicy(nn.Module):
@@ -32,18 +30,19 @@ class RecurrentCarRacingPolicy(nn.Module):
 
 
 class RecurrentCarRacingAgent(Individual):
-    def __init__(self, ):
+    def __init__(self, env_args: Dict):
+        self.env_args = env_args
         self.policy_net = RecurrentCarRacingPolicy()
 
     @staticmethod
-    def from_params(params: Dict[str, t.Tensor]) -> 'RecurrentCarRacingAgent':
-        agent = RecurrentCarRacingAgent()
+    def from_params(params: Dict[str, t.Tensor], env_args: Dict) -> 'RecurrentCarRacingAgent':
+        agent = RecurrentCarRacingAgent(env_args)
         agent.policy_net.load_state_dict(params)
         return agent
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
-        env = gym.make("CarRacing-v0", verbose=0)
+        env = gym.make('CarRacingCustom-v0', **self.env_args)
         env = ResizeObservation(env, 84)
         obs = env.reset()
         done = False
@@ -66,7 +65,7 @@ class RecurrentCarRacingAgent(Individual):
 
     def action(self, obs, hc):
         with t.no_grad():
-            obs = t.tensor(obs / 255.0, dtype=t.float32).permute((2, 0, 1)).unsqueeze(0).sg((1, 3, 84, 84))
+            obs = t.tensor(obs / 255.0, dtype=t.float32).permute((2, 0, 1)).unsqueeze(0)
             out, hc = self.policy_net(obs, hc)
             out = out[0]
             return t.tensor((t.tanh(out[0]), t.sigmoid(out[1]), t.sigmoid(out[2]))).numpy(), hc

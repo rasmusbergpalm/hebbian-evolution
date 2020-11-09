@@ -5,15 +5,29 @@ from torch.multiprocessing import Pool, set_start_method
 from torch.optim import Adam
 
 import util
+from meta_agent import MetaAgent
 from rnn_car import RecurrentCarRacingAgent
 
 if __name__ == '__main__':
     set_start_method('spawn')
     train_writer, test_writer = util.get_writers('hebbian')
 
-    agent = RecurrentCarRacingAgent()
+    env_args = [
+        {},
+        {'side_force': 1.0},
+        {'side_force': -1.0},
+        {'friction': 0.5},
+        # {'friction': 2.0}
+    ]
+
+
+    def constructor(params) -> MetaAgent:
+        return MetaAgent([RecurrentCarRacingAgent.from_params(params, env_arg) for env_arg in env_args])
+
+
+    agent = RecurrentCarRacingAgent(env_args[0])
     shapes = {k: p.shape for k, p in agent.get_params().items()}
-    population = NormalPopulation(shapes, RecurrentCarRacingAgent.from_params, std=0.1)
+    population = NormalPopulation(shapes, constructor, std=0.1)
 
     iterations = 30_000
     pop_size = 200
