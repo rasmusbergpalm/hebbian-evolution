@@ -12,6 +12,8 @@ import envs
 
 if __name__ == '__main__':
     set_start_method('spawn')
+    t.multiprocessing.set_sharing_strategy('file_system')
+
     train_writer, test_writer = util.get_writers('hebbian')
 
     env_args = [
