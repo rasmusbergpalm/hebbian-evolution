@@ -6,8 +6,9 @@ from torch.optim import Adam
 
 import util
 from meta_agent import MetaAgent
-import envs
 from static_car import StaticCarRacingAgent
+# noinspection PyUnresolvedReferences
+import envs
 
 if __name__ == '__main__':
     set_start_method('spawn')
@@ -15,8 +16,8 @@ if __name__ == '__main__':
 
     env_args = [
         {},
-        {'side_force': 1.0},
-        {'side_force': -1.0},
+        {'side_force': 10.0},
+        {'side_force': -10.0},
         {'friction': 0.5},
         # {'friction': 2.0}
     ]
@@ -30,11 +31,12 @@ if __name__ == '__main__':
     shapes = {k: p.shape for k, p in agent.get_params().items()}
     population = NormalPopulation(shapes, constructor, std=0.1)
 
-    iterations = 30_000
+    iterations = 1_000
     pop_size = 200
 
     optim = Adam(population.parameters(), lr=0.1)
     pbar = tqdm.tqdm(range(iterations))
+    best_so_far = -1e9
     for i in pbar:
         optim.zero_grad()
         with Pool() as pool:
@@ -43,8 +45,14 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness', raw_fitness.mean(), i)
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
         optim.step()
-        pbar.set_description("avg fit: %.3f, std: %.3f" % (raw_fitness.mean().item(), raw_fitness.std().item()))
-        if raw_fitness.mean() > 700:
+        mean_fit = raw_fitness.mean().item()
+        pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
+
+        if mean_fit > best_so_far:
+            best_so_far = mean_fit
+            t.save(population.parameters(), 'best.t')
+
+        if mean_fit > 900:
             t.save(population.parameters(), 'sol.t')
             print("Solved.")
             break

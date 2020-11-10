@@ -475,7 +475,7 @@ class CarRacing(gym.Env, EzPickle):
         self.score_label.draw()
 
 
-def main():
+def main(side_force):
     from pyglet.window import key
     a = np.array([0.0, 0.0, 0.0])
 
@@ -493,7 +493,7 @@ def main():
         if k == key.UP:    a[1] = 0
         if k == key.DOWN:  a[2] = 0
 
-    env = CarRacing()
+    env = CarRacing(side_force=side_force)
     env.render()
     env.viewer.window.on_key_press = key_press
     env.viewer.window.on_key_release = key_release
@@ -521,4 +521,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(side_force=10.0)
