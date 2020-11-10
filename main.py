@@ -23,6 +23,7 @@ if __name__ == '__main__':
     ]
 
 
+
     def constructor(params) -> MetaAgent:
         return MetaAgent([StaticCarRacingAgent.from_params(params, env_arg) for env_arg in env_args])
 
