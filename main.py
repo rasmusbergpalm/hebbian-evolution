@@ -19,8 +19,8 @@ if __name__ == '__main__':
     env_args = [
         {},
         {'side_force': 10.0},
-        {'side_force': -10.0},
-        # {'friction': 0.5},
+        # {'side_force': -10.0},
+        {'friction': 0.5},
         {'friction': 2.0}
     ]
 
