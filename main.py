@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     train_writer, test_writer = util.get_writers('hebbian')
 
+
     env_args = [
         {},
         # {'side_force': 10.0},
