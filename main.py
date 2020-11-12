@@ -4,11 +4,11 @@ from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method
 from torch.optim import Adam
 
+# noinspection PyUnresolvedReferences
+import envs
 import util
 from meta_agent import MetaAgent
 from static_car import StaticCarRacingAgent
-# noinspection PyUnresolvedReferences
-import envs
 
 if __name__ == '__main__':
     set_start_method('spawn')
@@ -53,8 +53,10 @@ if __name__ == '__main__':
         if mean_fit > best_so_far:
             best_so_far = mean_fit
             t.save(population.parameters(), 'best.t')
+            util.upload_results('best.t')
 
         if mean_fit > 900:
             t.save(population.parameters(), 'sol.t')
+            util.upload_results('sol.t')
             print("Solved.")
             break
