@@ -17,11 +17,11 @@ if __name__ == '__main__':
     train_writer, test_writer = util.get_writers('hebbian')
 
     env_args = [
-        {},
+        # {},
         {'side_force': 10.0},
         {'side_force': -10.0},
         {'friction': 0.5},
-        # {'friction': 2.0}
+        {'friction': 2.0}
     ]
 
 
