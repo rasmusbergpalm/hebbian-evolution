@@ -10,11 +10,12 @@ from meta_agent import MetaAgent
 from static_car import StaticCarRacingAgent
 # noinspection PyUnresolvedReferences
 import envs
+import os
 
 if __name__ == '__main__':
     set_start_method('spawn')
     t.multiprocessing.set_sharing_strategy('file_system')
-    client = storage.Client()
+    client = storage.Client.from_service_account_json(os.path.expanduser("~/.gs/hebbian-meta-learning.json"))
 
     train_writer, test_writer = util.get_writers('hebbian')
 
