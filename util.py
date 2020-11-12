@@ -5,15 +5,17 @@ from google.cloud import storage
 from google.cloud.storage import Bucket
 from torch.utils.tensorboard import SummaryWriter
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser("~/.gs/hebbian-meta-learning.json")
 revision = os.environ.get("REVISION") or "%s" % datetime.now()
-tensorboard_dir = os.environ.get('TENSORBOARD_DIR') or '/tmp/tensorboard'
 message = os.environ.get('MESSAGE')
-client = storage.Client.from_service_account_json(os.path.expanduser("~/.gs/hebbian-meta-learning.json"))
+tensorboard_dir = "gs://hebbian-meta-learning/tensorboard"
+client = storage.Client()
+flush_secs = 10
 
 
 def get_writers(name):
-    train_writer = SummaryWriter(tensorboard_dir + '/%s/%s/train/%s' % (name, revision, message))
-    test_writer = SummaryWriter(tensorboard_dir + '/%s/%s/test/%s' % (name, revision, message))
+    train_writer = SummaryWriter(tensorboard_dir + '/%s/%s/train/%s' % (name, revision, message), flush_secs=flush_secs)
+    test_writer = SummaryWriter(tensorboard_dir + '/%s/%s/test/%s' % (name, revision, message), flush_secs=flush_secs)
     return train_writer, test_writer
 
 
