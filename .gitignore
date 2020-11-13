@@ -2,3 +2,6 @@
 venv
 plots
 .vscode
+__pycache__/
+envs/__pycache__/
+
