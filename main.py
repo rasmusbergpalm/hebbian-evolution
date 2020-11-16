@@ -30,6 +30,7 @@ if __name__ == '__main__':
         return MetaAgent([HebbianCarRacingAgent.from_params(params, env_arg) for env_arg in env_args])
 
 
+
     agent = HebbianCarRacingAgent(env_args[0])
     shapes = {k: p.shape for k, p in agent.get_params().items()}
     population = NormalPopulation(shapes, constructor, std=0.1)
