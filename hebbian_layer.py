@@ -12,7 +12,7 @@ class HebbianLayer(nn.Module):
         self.learn_init = learn_init
 
         if learn_init:
-            self.W_init = nn.Parameter(t.randn((n_in, n_out)))
+            self.W_init = nn.Parameter(t.randn((n_in, n_out)), requires_grad=False)
             self.W = self.W_init + 0
         else:
             self.W = t.randn((self.n_in, self.n_out))

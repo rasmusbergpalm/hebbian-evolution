@@ -12,11 +12,12 @@ from static_car import StaticCarRacingAgent
 import envs
 
 if __name__ == '__main__':
-    set_start_method('spawn')
+    set_start_method('fork')
     t.multiprocessing.set_sharing_strategy('file_system')
 
     train_writer, test_writer = util.get_writers('hebbian')
 
+    agent = HebbianCarRacingAgent
     env_args = [
         # {},
         {'side_force': 10.0},
@@ -27,12 +28,10 @@ if __name__ == '__main__':
 
 
     def constructor(params) -> MetaAgent:
-        return MetaAgent([HebbianCarRacingAgent.from_params(params, env_arg) for env_arg in env_args])
+        return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-
-    agent = HebbianCarRacingAgent(env_args[0])
-    shapes = {k: p.shape for k, p in agent.get_params().items()}
+    shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     population = NormalPopulation(shapes, constructor, std=0.1)
 
     iterations = 1_000
