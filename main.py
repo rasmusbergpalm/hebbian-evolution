@@ -33,7 +33,7 @@ if __name__ == '__main__':
     population = NormalPopulation(shapes, constructor, std=0.1)
 
     iterations = 1_000
-    pop_size = 200
+    pop_size = 50
 
     optim = Adam(population.parameters(), lr=0.1)
     pbar = tqdm.tqdm(range(iterations))
