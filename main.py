@@ -30,7 +30,6 @@ if __name__ == '__main__':
 
 
     def constructor(params) -> MetaAgent:
-        params = {k: v.to("cpu").detach() for k, v in params.items()}
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
@@ -38,7 +37,7 @@ if __name__ == '__main__':
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
     n_rules = 16
-    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, lambda x: x, 0.1, (n_rules, 5), device)
+    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
 
     iterations = 1_000
     pop_size = 100
