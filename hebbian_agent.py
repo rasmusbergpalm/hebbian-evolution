@@ -34,7 +34,7 @@ class HebbianCarRacingAgent(Individual):
         return agent
 
     def fitness(self, render=False) -> float:
-        # gym.logger.set_level(40)
+        gym.logger.set_level(40)
         env = gym.make('CarRacingCustom-v0', **self.env_args)
         env = ResizeObservation(env, 84)
         obs = env.reset()

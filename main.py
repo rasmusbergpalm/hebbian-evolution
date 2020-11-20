@@ -40,7 +40,7 @@ if __name__ == '__main__':
     population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5))
 
     iterations = 1_000
-    pop_size = 2
+    pop_size = 200
 
     optim = Adam(population.parameters(), lr=0.1)
     pbar = tqdm.tqdm(range(iterations))
