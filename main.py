@@ -38,15 +38,9 @@ if __name__ == '__main__':
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
     n_rules = 16
     population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, lambda x: x, 0.1, (n_rules, 5), device)
-    import time
 
-    print("sampling")
-    start = time.perf_counter()
-    population.sample(200)
-    print("took", time.perf_counter() - start)
-    exit(0)
     iterations = 1_000
-    pop_size = 200
+    pop_size = 100
 
     optim = Adam(population.parameters(), lr=0.1)
     pbar = tqdm.tqdm(range(iterations))
