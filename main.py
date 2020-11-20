@@ -6,6 +6,7 @@ from torch.optim import Adam
 import util
 from hebbian_agent import HebbianCarRacingAgent
 from meta_agent import MetaAgent
+from mixed_normal_gmm_population import MixedNormalAndGMMPopulation
 from static_car import StaticCarRacingAgent
 
 # noinspection PyUnresolvedReferences
@@ -31,8 +32,11 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
+    n_rules = 714
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
-    population = NormalPopulation(shapes, constructor, std=0.1)
+    norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
+    gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
+    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5))
 
     iterations = 1_000
     pop_size = 200
