@@ -8,7 +8,7 @@ from torch.utils.tensorboard import SummaryWriter
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser("~/.gs/hebbian-meta-learning.json")
 revision = os.environ.get("REVISION") or "%s" % datetime.now()
 message = os.environ.get('MESSAGE')
-tensorboard_dir = "gs://hebbian-meta-learning/tensorboard"
+tensorboard_dir = "/tmp/tensorboard"  # "gs://hebbian-meta-learning/tensorboard"
 client = storage.Client()
 flush_secs = 10
 
