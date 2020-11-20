@@ -10,11 +10,12 @@ class MixedNormalAndGMMPopulation(Population):
                  gmm_shapes: Dict[str, t.Size],
                  individual_constructor: Callable[[Dict[str, t.Tensor]], Individual],
                  std: Union[float, str],
-                 n_components: t.Size
+                 n_components: t.Size,
+                 device="cpu"
                  ):
         self.individual_constructor = individual_constructor
-        self.normal_pop = NormalPopulation(normal_shapes, lambda x: x, std, False)
-        self.gmm_pop = GaussianMixturePopulation(gmm_shapes, n_components, lambda x: x, std)
+        self.normal_pop = NormalPopulation(normal_shapes, lambda x: x, std, False, device=device)
+        self.gmm_pop = GaussianMixturePopulation(gmm_shapes, n_components, lambda x: x, std, device=device)
 
     def parameters(self) -> Iterable[t.Tensor]:
         return list(self.normal_pop.parameters()) + list(self.gmm_pop.parameters())
@@ -28,10 +29,10 @@ class MixedNormalAndGMMPopulation(Population):
 
 if __name__ == '__main__':
     pop = MixedNormalAndGMMPopulation(normal_shapes={'a': (3, 5)},
-                                      gmm_shapes={'1.h': (7, 9)},
+                                      gmm_shapes={'1.h': (648, 128), '2.h': (128, 64), '3.h': (64, 3)},
                                       individual_constructor=lambda x: x,
                                       std=0.1,
-                                      n_components=(11,)
+                                      n_components=(16, 5)
                                       )
-    inds, logps = zip(*pop.sample(8))
+    inds, logps = zip(*pop.sample(100))
     i = 0

@@ -17,6 +17,7 @@ if __name__ == '__main__':
     t.multiprocessing.set_sharing_strategy('file_system')
 
     train_writer, test_writer = util.get_writers('hebbian')
+    device = "cuda" if t.cuda.is_available() else "cpu"
 
     agent = HebbianCarRacingAgent
     env_args = [
@@ -32,13 +33,18 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    rho = 128
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
-    n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
-    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5))
+    n_rules = 16
+    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, lambda x: x, 0.1, (n_rules, 5), device)
+    import time
 
+    print("sampling")
+    start = time.perf_counter()
+    population.sample(200)
+    print("took", time.perf_counter() - start)
+    exit(0)
     iterations = 1_000
     pop_size = 200
 
