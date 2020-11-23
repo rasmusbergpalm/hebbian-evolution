@@ -16,7 +16,6 @@ if __name__ == '__main__':
     set_start_method('fork')
     t.multiprocessing.set_sharing_strategy('file_system')
 
-    train_writer, test_writer = util.get_writers('hebbian')
     device = "cuda" if t.cuda.is_available() else "cpu"
 
     agent = HebbianCarRacingAgent
@@ -33,19 +32,21 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    rho=128
+    #rho = 128
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
-    n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
+    # n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
+    n_rules = 16
     population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
 
     iterations = 1_000
-    pop_size = 100
+    pop_size = 200
 
     optim = Adam(population.parameters(), lr=0.1)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
+    train_writer, test_writer = util.get_writers('hebbian')
     for i in pbar:
         optim.zero_grad()
         with Pool() as pool:

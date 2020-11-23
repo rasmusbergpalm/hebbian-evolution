@@ -24,15 +24,16 @@ class MixedNormalAndGMMPopulation(Population):
         norms = self.normal_pop.sample(n)
         gmms = self.gmm_pop.sample(n)
 
-        return [(self.individual_constructor({**norm_param, **gmm_param}), norm_logp + gmm_logp) for (norm_param, norm_logp), (gmm_param, gmm_logp) in zip(norms, gmms)]
+        return ((self.individual_constructor({**norm_param, **gmm_param}), norm_logp + gmm_logp) for (norm_param, norm_logp), (gmm_param, gmm_logp) in zip(norms, gmms))
 
 
 if __name__ == '__main__':
-    pop = MixedNormalAndGMMPopulation(normal_shapes={'a': (3, 5)},
+    n_rules = 16
+    pop = MixedNormalAndGMMPopulation(normal_shapes={},
                                       gmm_shapes={'1.h': (648, 128), '2.h': (128, 64), '3.h': (64, 3)},
                                       individual_constructor=lambda x: x,
                                       std=0.1,
-                                      n_components=(16, 5)
+                                      n_components=(n_rules, 5)
                                       )
-    inds, logps = zip(*pop.sample(100))
+    pop.fitness_grads(200)
     i = 0
