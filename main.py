@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     agent = HebbianCarRacingAgent
     env_args = [
-        # {},
-        {'side_force': 10.0},
-        {'side_force': -10.0},
-        {'friction': 0.5},
-        {'friction': 2.0}
+        {},
+        # {'side_force': 10.0},
+        # {'side_force': -10.0},
+        # {'friction': 0.5},
+        # {'friction': 2.0}
     ]
 
 
