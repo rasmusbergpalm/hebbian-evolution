@@ -7,6 +7,7 @@ import util
 from hebbian_agent import HebbianCarRacingAgent
 from meta_agent import MetaAgent
 from mixed_normal_gmm_population import MixedNormalAndGMMPopulation
+from random_shared_population import RandomSharedPopulation
 from static_car import StaticCarRacingAgent
 
 # noinspection PyUnresolvedReferences
@@ -32,13 +33,13 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    # rho = 128
+    rho = 128
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
-    # n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
-    n_rules = 2
-    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
+    n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
+    # n_rules = 2
+    population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
 
     iterations = 1_000
     pop_size = 200
