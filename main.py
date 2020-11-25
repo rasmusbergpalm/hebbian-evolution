@@ -33,14 +33,14 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    rho = 2
+    rho = 0.5
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
     n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
     # n_rules = 2
-    # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
-    population = NormalPopulation(shapes, constructor, 0.1, True)
+    population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
+    # population = NormalPopulation(shapes, constructor, 0.1, True)
 
     iterations = 1_000
     pop_size = 200
