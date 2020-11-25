@@ -33,7 +33,7 @@ if __name__ == '__main__':
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    rho = 128
+    rho = 1
     shapes = {k: p.shape for k, p in agent({}).get_params().items()}
     norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
