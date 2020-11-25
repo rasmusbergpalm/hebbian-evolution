@@ -39,7 +39,8 @@ if __name__ == '__main__':
     gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
     n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
     # n_rules = 2
-    population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
+    # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
+    population = NormalPopulation(shapes, constructor, 0.1, True)
 
     iterations = 1_000
     pop_size = 200
