@@ -1,7 +1,7 @@
 import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
-from torch.multiprocessing import Pool, set_start_method
+from torch.multiprocessing import Pool, set_start_method, cpu_count
 from torch.optim import Adam, SGD
 import util
 from hebbian_agent import HebbianCarRacingAgent
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     train_writer, test_writer = util.get_writers('hebbian')
     for i in pbar:
         optim.zero_grad()
-        with Pool() as pool:
+        with Pool(cpu_count() // 2) as pool:
             raw_fitness = population.fitness_grads(pop_size, pool, compute_centered_ranks)
 
         train_writer.add_scalar('fitness', raw_fitness.mean(), i)
