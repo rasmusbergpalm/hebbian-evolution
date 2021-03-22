@@ -41,9 +41,9 @@ class HebbianLayer(nn.Module):
         post.sg((self.n_out,))
 
         eta, A, B, C, D = [v.squeeze().sg((self.n_in, self.n_out)) for v in self.h.split(1, -1)]
-        self.W += t.tanh(eta * (
+        self.W += eta * (
                 A * (pre[:, None] @ post[None, :]).sg((self.n_in, self.n_out)) +
                 (B * pre[:, None]).sg((self.n_in, self.n_out)) +
                 (C * post[None, :]).sg((self.n_in, self.n_out)) +
                 D
-        ))
+        )
