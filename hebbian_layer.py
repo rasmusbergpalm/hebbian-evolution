@@ -16,7 +16,7 @@ class HebbianLayer(nn.Module):
             self.W_init = nn.Parameter(t.randn((n_in, n_out)), requires_grad=False)
             self.W = self.W_init + 0
         else:
-            self.W = t.randn((self.n_in, self.n_out), requires_grad=False)
+            self.W = 0.2 * t.rand((self.n_in, self.n_out), requires_grad=False) - 0.1
 
         self.h = nn.Parameter(t.randn((n_in, n_out, 5)))
         self.activation_fn = activation_fn
@@ -29,7 +29,7 @@ class HebbianLayer(nn.Module):
         if self.learn_init:
             self.W = self.W_init + 0
         else:
-            self.W = t.randn((self.n_in, self.n_out))
+            self.W = 0.2 * t.rand((self.n_in, self.n_out), requires_grad=False) - 0.1
 
     def forward(self, pre):
         pre.sg((self.n_in,))
