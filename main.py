@@ -42,6 +42,7 @@ if __name__ == '__main__':
     # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
     population = NormalPopulation(shapes, constructor, 0.1, True)
 
+
     iterations = 300
     pop_size = 200
 
