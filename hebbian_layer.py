@@ -5,11 +5,12 @@ import shapeguard
 
 class HebbianLayer(nn.Module):
 
-    def __init__(self, n_in, n_out, activation_fn, learn_init=False):
+    def __init__(self, n_in, n_out, activation_fn, learn_init=False, normalize=False):
         super().__init__()
         self.n_in = n_in
         self.n_out = n_out
         self.learn_init = learn_init
+        self.normalize = normalize
 
         if learn_init:
             self.W_init = nn.Parameter(t.randn((n_in, n_out)), requires_grad=False)
@@ -47,3 +48,8 @@ class HebbianLayer(nn.Module):
                 (C * post[None, :]).sg((self.n_in, self.n_out)) +
                 D
         )
+
+        if self.normalize:
+            self.W = self.W - self.W.min()  # (0, inf)
+            self.W = self.W / self.W.max()  # (0, 1)
+            self.W = self.W * 2 - 1.0  # (-1, 1)

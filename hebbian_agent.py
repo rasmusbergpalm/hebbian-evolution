@@ -22,9 +22,9 @@ class HebbianCarRacingAgent(Individual):
             nn.Conv2d(3, 6, 3, bias=False), nn.Tanh(), nn.MaxPool2d(2, 2),
             nn.Conv2d(6, 8, 5, 2, bias=False), nn.Tanh(), nn.MaxPool2d(2, 2),
             nn.Flatten(start_dim=0),  # (648, )
-            HebbianLayer(648, 128, nn.Tanh()),
-            HebbianLayer(128, 64, nn.Tanh()),
-            HebbianLayer(64, 3, last_act_fn)  # (1, 3)
+            HebbianLayer(648, 128, nn.Tanh(), normalize=True),
+            HebbianLayer(128, 64, nn.Tanh(), normalize=True),
+            HebbianLayer(64, 3, last_act_fn, normalize=True)  # (1, 3)
         )
 
     @staticmethod
