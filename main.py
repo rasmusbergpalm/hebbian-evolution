@@ -2,7 +2,7 @@ import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method
-from torch.optim import Adam
+from torch.optim import Adam, SGD
 import util
 from hebbian_agent import HebbianCarRacingAgent
 from meta_agent import MetaAgent
@@ -42,10 +42,10 @@ if __name__ == '__main__':
     # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
     population = NormalPopulation(shapes, constructor, 0.1, True)
 
-    iterations = 1_000
+    iterations = 300
     pop_size = 200
 
-    optim = Adam(population.parameters(), lr=0.1)
+    optim = SGD(population.parameters(), lr=0.2)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
     train_writer, test_writer = util.get_writers('hebbian')
