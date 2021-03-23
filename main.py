@@ -1,3 +1,5 @@
+from typing import Dict
+
 import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
@@ -29,20 +31,24 @@ if __name__ == '__main__':
         # {'friction': 2.0}
     ]
 
+    all_params = agent({}).get_params()
+    cnn_params = {k: p for k, p in all_params.items() if not k.endswith('.h')}
+    hebb_shapes = {k: p.shape for k, p in all_params.items() if k.endswith('.h')}
 
-    def constructor(params) -> MetaAgent:
+
+    def constructor(hebb_params: Dict) -> MetaAgent:
+        params = dict(**cnn_params, **hebb_params)
         return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
 
 
-    rho = 0.5
-    shapes = {k: p.shape for k, p in agent({}).get_params().items()}
-    norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
-    gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
-    n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
-    # n_rules = 2
+    # rho = 0.5
+    # norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
+    # gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
+    # n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
     # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
-    population = NormalPopulation(shapes, constructor, 0.1, True)
-    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in shapes.items()}  # pop mean init hack
+
+    population = NormalPopulation(hebb_shapes, constructor, 0.1, True)
+    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in hebb_shapes.items()}  # pop mean init hack
 
     iterations = 300
     pop_size = 200
