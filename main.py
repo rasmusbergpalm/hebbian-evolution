@@ -32,7 +32,7 @@ if __name__ == '__main__':
     ]
 
     all_params = agent({}).get_params()
-    cnn_params = {k: p for k, p in all_params.items() if not k.endswith('.h')}
+    cnn_params = {k: p.detach() for k, p in all_params.items() if not k.endswith('.h')}
     hebb_shapes = {k: p.shape for k, p in all_params.items() if k.endswith('.h')}
 
 
