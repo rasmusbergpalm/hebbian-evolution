@@ -42,6 +42,7 @@ if __name__ == '__main__':
     # n_rules = 2
     # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
     population = NormalPopulation(shapes, constructor, 0.1, True)
+    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in shapes.items()}  # pop mean init hack
 
     iterations = 300
     pop_size = 200
@@ -60,6 +61,7 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
         optim.step()
         sched.step()
+        population.param_logstds = {k: t.log(t.exp(logstd) * 0.999) for k, logstd in population.param_logstds.items()}  # sigma decay hack
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
