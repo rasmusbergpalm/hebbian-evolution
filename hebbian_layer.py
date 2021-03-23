@@ -50,6 +50,4 @@ class HebbianLayer(nn.Module):
         )
 
         if self.normalize:
-            self.W = self.W - self.W.min()  # (0, inf)
-            self.W = self.W / self.W.max()  # (0, 1)
-            self.W = self.W * 2 - 1.0  # (-1, 1)
+            self.W = self.W / self.W.abs().max()
