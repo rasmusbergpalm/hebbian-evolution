@@ -3,6 +3,7 @@ import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method, cpu_count
 from torch.optim import Adam, SGD
+from torch.optim.lr_scheduler import MultiplicativeLR
 import util
 from hebbian_agent import HebbianCarRacingAgent
 from meta_agent import MetaAgent
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     pop_size = 200
 
     optim = SGD(population.parameters(), lr=0.2)
+    sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
     train_writer, test_writer = util.get_writers('hebbian')
@@ -57,6 +59,7 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness', raw_fitness.mean(), i)
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
         optim.step()
+        sched.step()
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
