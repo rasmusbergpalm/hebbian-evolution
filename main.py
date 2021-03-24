@@ -38,7 +38,6 @@ if __name__ == '__main__':
         return MetaAgent([HebbianCarRacingAgent(params, env_arg) for env_arg in env_args])
 
 
-
     population = NormalPopulation(hebb_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in hebb_shapes.items()}  # pop mean init hack
 
@@ -57,6 +56,9 @@ if __name__ == '__main__':
 
         train_writer.add_scalar('fitness', raw_fitness.mean(), i)
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
+        for p_idx, p in enumerate(population.parameters()):
+            train_writer.add_histogram('grads/%d' % p_idx, p.grad, i)
+
         optim.step()
         sched.step()
         population.param_logstds = {k: t.log(t.exp(logstd) * 0.999) for k, logstd in population.param_logstds.items()}  # sigma decay hack
