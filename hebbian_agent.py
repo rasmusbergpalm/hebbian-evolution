@@ -21,8 +21,10 @@ class HebbianCarRacingAgent(Individual):
         self.heb3 = HebbianLayer(params["hebb.3"], last_act_fn, normalize=True)
 
     def net(self, x):
-        x = t.max_pool2d(t.tanh(t.conv2d(x, self.params["cnn.1"])), (2, 2))
-        x = t.max_pool2d(t.tanh(t.conv2d(x, self.params["cnn.2"], stride=2)), (2, 2))
+        x = t.tanh(t.conv2d(x, self.params["cnn.1"]))
+        x = t.max_pool2d(x, (2, 2))
+        x = t.tanh(t.conv2d(x, self.params["cnn.2"], stride=2))
+        x = t.max_pool2d(x, (2, 2))
         x = t.flatten(x, 0)
         x = self.heb1.forward(x)
         x = self.heb2.forward(x)
