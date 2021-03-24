@@ -4,7 +4,7 @@ import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method, cpu_count
-from torch.optim import SGD
+from torch.optim import SGD, Adam
 from torch.optim.lr_scheduler import MultiplicativeLR
 
 # noinspection PyUnresolvedReferences
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
-    optim = SGD(population.parameters(), lr=0.2)
+    optim = Adam(population.parameters(), lr=0.1)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
