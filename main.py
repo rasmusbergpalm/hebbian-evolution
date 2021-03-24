@@ -2,7 +2,7 @@ from typing import Dict
 
 import torch as t
 import tqdm
-from evostrat import NormalPopulation, compute_centered_ranks
+from evostrat import NormalPopulation, compute_centered_ranks, normalize
 from torch.multiprocessing import Pool, set_start_method, cpu_count
 from torch.optim import SGD, Adam
 from torch.optim.lr_scheduler import MultiplicativeLR
@@ -44,11 +44,15 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
-    optim = Adam(population.parameters(), lr=0.1)
+    optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
     train_writer, test_writer = util.get_writers('hebbian')
+
+    def fitness_shaping(x):
+        return normalize(compute_centered_ranks(x))
+
     for i in pbar:
         optim.zero_grad()
         with Pool(cpu_count() // 2) as pool:
