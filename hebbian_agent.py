@@ -53,8 +53,8 @@ class HebbianCarRacingAgent(Individual):
     @staticmethod
     def param_shapes() -> Dict[str, t.Tensor]:
         return {
-            'cnn.1': (3, 6, 3),
-            'cnn.2': (6, 8, 5),
+            'cnn.1': (6, 3, 3, 3),
+            'cnn.2': (8, 6, 5, 5),
             'hebb.1': (648, 128, 5),
             'hebb.2': (128, 64, 5),
             'hebb.3': (64, 3, 5),
