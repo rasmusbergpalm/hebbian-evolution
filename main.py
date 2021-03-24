@@ -38,6 +38,7 @@ if __name__ == '__main__':
         return MetaAgent([HebbianCarRacingAgent(params, env_arg) for env_arg in env_args])
 
 
+
     population = NormalPopulation(hebb_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in hebb_shapes.items()}  # pop mean init hack
 
