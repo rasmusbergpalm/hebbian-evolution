@@ -4,7 +4,6 @@ import gym
 import torch as t
 from evostrat import Individual
 from gym.wrappers import *
-from torch import nn
 
 from hebbian_layer import HebbianLayer
 
@@ -14,24 +13,21 @@ def last_act_fn(x):
 
 
 class HebbianCarRacingAgent(Individual):
-    def __init__(self, env_args: Dict):
+    def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
         self.env_args = env_args
+        self.params = params
+        self.heb1 = HebbianLayer(params["hebb.1"], t.tanh, normalize=True)
+        self.heb2 = HebbianLayer(params["hebb.2"], t.tanh, normalize=True)
+        self.heb3 = HebbianLayer(params["hebb.3"], last_act_fn, normalize=True)
 
-        self.net = nn.Sequential(
-            # 84, 84, 3
-            nn.Conv2d(3, 6, 3, bias=False), nn.Tanh(), nn.MaxPool2d(2, 2),
-            nn.Conv2d(6, 8, 5, 2, bias=False), nn.Tanh(), nn.MaxPool2d(2, 2),
-            nn.Flatten(start_dim=0),  # (648, )
-            HebbianLayer(648, 128, nn.Tanh(), normalize=True),
-            HebbianLayer(128, 64, nn.Tanh(), normalize=True),
-            HebbianLayer(64, 3, last_act_fn, normalize=True)  # (1, 3)
-        )
-
-    @staticmethod
-    def from_params(params: Dict[str, t.Tensor], env_args: Dict) -> 'HebbianCarRacingAgent':
-        agent = HebbianCarRacingAgent(env_args)
-        agent.net.load_state_dict(params)
-        return agent
+    def net(self, x):
+        x = t.max_pool2d(t.tanh(t.conv2d(x, self.params["cnn.1"])), (2, 2))
+        x = t.max_pool2d(t.tanh(t.conv2d(x, self.params["cnn.2"], stride=2)), (2, 2))
+        x = t.flatten(x, 0)
+        x = self.heb1.forward(x)
+        x = self.heb2.forward(x)
+        x = self.heb3.forward(x)
+        return x
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
@@ -52,16 +48,17 @@ class HebbianCarRacingAgent(Individual):
         env.close()
         return r_tot
 
-    def get_params(self) -> Dict[str, t.Tensor]:
-        return self.net.state_dict()
+    @staticmethod
+    def param_shapes() -> Dict[str, t.Tensor]:
+        return {
+            'cnn.1': (3, 6, 3),
+            'cnn.2': (6, 8, 5),
+            'hebb.1': (648, 128, 5),
+            'hebb.2': (128, 64, 5),
+            'hebb.3': (64, 3, 5),
+        }
 
     def action(self, obs):
         with t.no_grad():
             obs = t.tensor(obs / 255.0, dtype=t.float32).permute((2, 0, 1)).unsqueeze(0)
             return self.net(obs).numpy()
-
-
-if __name__ == '__main__':
-    import envs
-
-    HebbianCarRacingAgent({}).fitness(True)

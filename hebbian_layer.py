@@ -1,35 +1,24 @@
-from torch import nn
 import torch as t
 import shapeguard
 
 
-class HebbianLayer(nn.Module):
+class HebbianLayer:
 
-    def __init__(self, n_in, n_out, activation_fn, learn_init=False, normalize=False):
-        super().__init__()
-        self.n_in = n_in
-        self.n_out = n_out
-        self.learn_init = learn_init
-        self.normalize = normalize
+    def __init__(self, hebb_coeff: t.Tensor, activation_fn, weights: t.Tensor = None, normalize=False):
+        self.n_in, self.n_out, _ = hebb_coeff.shape
 
-        if learn_init:
-            self.W_init = nn.Parameter(t.randn((n_in, n_out)), requires_grad=False)
-            self.W = self.W_init + 0
+        if weights is not None:
+            weights.sg((self.n_in, self.n_out))
         else:
-            self.W = 0.2 * t.rand((self.n_in, self.n_out), requires_grad=False) - 0.1
+            weights = 0.2 * t.rand((self.n_in, self.n_out), requires_grad=False) - 0.1
 
-        self.h = nn.Parameter(t.randn((n_in, n_out, 5)))
+        self.W = weights
+        self.h = hebb_coeff
+        self.normalize = normalize
         self.activation_fn = activation_fn
 
     def get_weights(self):
         return self.W + 0
-
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs):
-        super()._load_from_state_dict(state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs)
-        if self.learn_init:
-            self.W = self.W_init + 0
-        else:
-            self.W = 0.2 * t.rand((self.n_in, self.n_out), requires_grad=False) - 0.1
 
     def forward(self, pre):
         pre.sg((self.n_in,))

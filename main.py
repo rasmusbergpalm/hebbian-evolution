@@ -4,17 +4,14 @@ import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks
 from torch.multiprocessing import Pool, set_start_method, cpu_count
-from torch.optim import Adam, SGD
+from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiplicativeLR
-import util
-from hebbian_agent import HebbianCarRacingAgent
-from meta_agent import MetaAgent
-from mixed_normal_gmm_population import MixedNormalAndGMMPopulation
-from random_shared_population import RandomSharedPopulation
-from static_car import StaticCarRacingAgent
 
 # noinspection PyUnresolvedReferences
 import envs
+import util
+from hebbian_agent import HebbianCarRacingAgent
+from meta_agent import MetaAgent
 
 if __name__ == '__main__':
     set_start_method('fork')
@@ -22,7 +19,6 @@ if __name__ == '__main__':
 
     device = "cuda" if t.cuda.is_available() else "cpu"
 
-    agent = HebbianCarRacingAgent
     env_args = [
         {},
         # {'side_force': 10.0},
@@ -31,21 +27,16 @@ if __name__ == '__main__':
         # {'friction': 2.0}
     ]
 
-    all_params = agent({}).get_params()
-    cnn_params = {k: t.randn(p.shape) for k, p in all_params.items() if not k.endswith('.h')}
-    hebb_shapes = {k: p.shape for k, p in all_params.items() if k.endswith('.h')}
+    param_shapes = HebbianCarRacingAgent.param_shapes()
+    cnn_params = {k: t.randn(s) for k, s in param_shapes.items() if k.startswith('cnn')}
+    hebb_shapes = {k: s for k, s in param_shapes.items() if k.startswith('hebb')}
 
 
     def constructor(hebb_params: Dict) -> MetaAgent:
         params = dict(**cnn_params, **hebb_params)
-        return MetaAgent([agent.from_params(params, env_arg) for env_arg in env_args])
+        params = {k: p.detach() for k, p in params.items()}
+        return MetaAgent([HebbianCarRacingAgent(params, env_arg) for env_arg in env_args])
 
-
-    # rho = 0.5
-    # norm_shapes = {k: v for k, v in shapes.items() if not k.endswith('.h')}
-    # gmm_shapes = {k: v[:-1] for k, v in shapes.items() if k.endswith('.h')}
-    # n_rules = int(sum([s.numel() for s in gmm_shapes.values()]) / rho)
-    # population = RandomSharedPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
 
     population = NormalPopulation(hebb_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in hebb_shapes.items()}  # pop mean init hack
@@ -71,13 +62,15 @@ if __name__ == '__main__':
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
+        all_params = list(cnn_params.values()) + population.parameters()
+
         if mean_fit > best_so_far:
             best_so_far = mean_fit
-            t.save(population.parameters(), 'best.t')
+            t.save(all_params, 'best.t')
             util.upload_results('best.t')
 
         if mean_fit > 900:
-            t.save(population.parameters(), 'sol.t')
+            t.save(all_params, 'sol.t')
             util.upload_results('sol.t')
             print("Solved.")
             break
