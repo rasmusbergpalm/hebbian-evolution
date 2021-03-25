@@ -48,7 +48,8 @@ class HebbianCarRacingAgent(Individual):
                 env.render()
 
         env.close()
-        return r_tot
+        wp = t.cat([self.heb1.W.flatten(), self.heb2.W.flatten(), self.heb3.W.flatten()])
+        return r_tot - 0.01 * (wp**2).mean()
 
     @staticmethod
     def param_shapes() -> Dict[str, t.Tensor]:
