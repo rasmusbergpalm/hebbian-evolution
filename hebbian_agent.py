@@ -18,7 +18,7 @@ class HebbianCarRacingAgent(Individual):
         self.params = params
         self.heb1 = HebbianLayer(params["hebb.1"], t.tanh, normalize=True)
         self.heb2 = HebbianLayer(params["hebb.2"], t.tanh, normalize=True)
-        self.heb3 = HebbianLayer(params["hebb.3"], last_act_fn, normalize=True)
+        self.heb3 = HebbianLayer(params["hebb.3"], lambda x: x, normalize=True)
 
     def net(self, x):
         x = t.tanh(t.conv2d(x, self.params["cnn.1"]))
@@ -29,7 +29,7 @@ class HebbianCarRacingAgent(Individual):
         x = self.heb1.forward(x)
         x = self.heb2.forward(x)
         x = self.heb3.forward(x)
-        return x
+        return last_act_fn(x)
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
@@ -49,7 +49,7 @@ class HebbianCarRacingAgent(Individual):
 
         env.close()
         wp = t.cat([self.heb1.W.flatten(), self.heb2.W.flatten(), self.heb3.W.flatten()])
-        return r_tot - 0.01 * (wp**2).mean()
+        return r_tot - 0.01 * (wp ** 2).mean()
 
     @staticmethod
     def param_shapes() -> Dict[str, t.Tensor]:
