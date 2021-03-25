@@ -28,18 +28,15 @@ if __name__ == '__main__':
     ]
 
     param_shapes = HebbianCarRacingAgent.param_shapes()
-    cnn_params = {k: t.randn(s) for k, s in param_shapes.items() if k.startswith('cnn')}
-    hebb_shapes = {k: s for k, s in param_shapes.items() if k.startswith('hebb')}
 
 
-    def constructor(hebb_params: Dict) -> MetaAgent:
-        params = dict(**cnn_params, **hebb_params)
+    def constructor(params: Dict) -> MetaAgent:
         params = {k: p.detach() for k, p in params.items()}
         return MetaAgent([HebbianCarRacingAgent(params, env_arg) for env_arg in env_args])
 
 
-    population = NormalPopulation(hebb_shapes, constructor, 0.1, True)
-    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in hebb_shapes.items()}  # pop mean init hack
+    population = NormalPopulation(param_shapes, constructor, 0.1, True)
+    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
 
     iterations = 300
     pop_size = 200
@@ -50,8 +47,10 @@ if __name__ == '__main__':
     best_so_far = -1e9
     train_writer, test_writer = util.get_writers('hebbian')
 
+
     def fitness_shaping(x):
         return normalize(compute_centered_ranks(x))
+
 
     for i in pbar:
         optim.zero_grad()
@@ -69,7 +68,7 @@ if __name__ == '__main__':
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
-        all_params = list(cnn_params.values()) + population.parameters()
+        all_params = population.parameters()
 
         if mean_fit > best_so_far:
             best_so_far = mean_fit
