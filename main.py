@@ -62,6 +62,7 @@ if __name__ == '__main__':
         for p_idx, p in enumerate(population.parameters()):
             train_writer.add_histogram('grads/%d' % p_idx, p.grad, i)
 
+
         optim.step()
         sched.step()
         population.param_logstds = {k: t.log(t.exp(logstd) * 0.999) for k, logstd in population.param_logstds.items()}  # sigma decay hack
