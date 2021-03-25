@@ -41,6 +41,7 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
+
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
