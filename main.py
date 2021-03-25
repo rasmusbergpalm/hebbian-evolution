@@ -41,7 +41,6 @@ if __name__ == '__main__':
     iterations = 300
     pop_size = 200
 
-
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
@@ -56,7 +55,7 @@ if __name__ == '__main__':
     for i in pbar:
         optim.zero_grad()
         with Pool(cpu_count() // 2) as pool:
-            raw_fitness = population.fitness_grads(pop_size, pool, compute_centered_ranks)
+            raw_fitness = population.fitness_grads(pop_size, pool, fitness_shaping)
 
         train_writer.add_scalar('fitness', raw_fitness.mean(), i)
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
