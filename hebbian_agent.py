@@ -12,13 +12,17 @@ def last_act_fn(x):
     return t.tensor((t.tanh(x[0]), t.sigmoid(x[1]), t.sigmoid(x[2])))
 
 
+def identity(x):
+    return x
+
+
 class HebbianCarRacingAgent(Individual):
     def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
         self.env_args = env_args
         self.params = params
         self.heb1 = HebbianLayer(params["hebb.1"], t.tanh, normalize=True)
         self.heb2 = HebbianLayer(params["hebb.2"], t.tanh, normalize=True)
-        self.heb3 = HebbianLayer(params["hebb.3"], lambda x: x, normalize=True)
+        self.heb3 = HebbianLayer(params["hebb.3"], identity, normalize=True)
 
     def net(self, x):
         x = t.tanh(t.conv2d(x, self.params["cnn.1"]))
