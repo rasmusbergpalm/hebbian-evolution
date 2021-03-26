@@ -31,7 +31,7 @@ class HebbianAnt(Individual):
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
-        env = gym.make('AntBulletEnv-v0', **self.env_args)
+        env = gym.make('AntBulletEnv-v0', **self.env_args, verbose=0)
         if render:
             env.render()
         obs = env.reset()
