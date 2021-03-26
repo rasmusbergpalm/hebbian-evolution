@@ -52,7 +52,7 @@ class HebbianCarRacingAgent(Individual):
                 env.render()
 
         env.close()
-        wp = t.cat([self.heb1.W.flatten(), self.heb2.W.flatten(), self.heb3.W.flatten()])
+        wp = t.cat([self.heb1.h.flatten(), self.heb2.h.flatten(), self.heb3.h.flatten()])
         return r_tot - 0.01 * (wp ** 2).mean()
 
     @staticmethod
