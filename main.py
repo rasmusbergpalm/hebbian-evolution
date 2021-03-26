@@ -1,10 +1,12 @@
+from multiprocessing.pool import Pool
+from os import cpu_count
 from typing import Dict
 
 import torch as t
 import tqdm
 from evostrat import NormalPopulation, compute_centered_ranks, normalize
-from torch.multiprocessing import Pool, set_start_method, cpu_count
-from torch.optim import SGD, Adam
+# from torch.multiprocessing import Pool, set_start_method, cpu_count
+from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiplicativeLR
 
 # noinspection PyUnresolvedReferences
@@ -14,8 +16,8 @@ from hebbian_agent import HebbianCarRacingAgent
 from meta_agent import MetaAgent
 
 if __name__ == '__main__':
-    set_start_method('fork')
-    t.multiprocessing.set_sharing_strategy('file_system')
+    # set_start_method('fork')
+    # t.multiprocessing.set_sharing_strategy('file_system')
 
     device = "cuda" if t.cuda.is_available() else "cpu"
 
