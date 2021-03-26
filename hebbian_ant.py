@@ -1,6 +1,7 @@
 from typing import Dict
 
 import gym
+import numpy as np
 import torch as t
 from evostrat import Individual
 
@@ -45,6 +46,8 @@ class HebbianAnt(Individual):
         r_tot, neg_r, n = (0, 0, 0)
         while True:
             action = self.action(obs)
+            if not np.all(np.isfinite(action)):
+                break
             obs, _, done, info = env.step(action)
             r = env.unwrapped.rewards[1]  # Distance walked
             r_tot += r
