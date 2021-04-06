@@ -2,23 +2,15 @@ from typing import Dict
 
 import gym
 import torch as t
-from evostrat import Individual
 from gym.wrappers import *
 
+from agents.racer.racer import CarRacingAgent, identity, last_act_fn
 from hebbian_layer import HebbianLayer
 
 
-def last_act_fn(x):
-    return t.tensor((t.tanh(x[0]), t.sigmoid(x[1]), t.sigmoid(x[2])))
-
-
-def identity(x):
-    return x
-
-
-class HebbianCarRacingAgent(Individual):
+class HebbianCarRacingAgent(CarRacingAgent):
     def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
-        self.env_args = env_args
+        super().__init__(env_args)
         self.params = params
         self.heb1 = HebbianLayer(params["hebb.1"], t.tanh, normalize=True)
         self.heb2 = HebbianLayer(params["hebb.2"], t.tanh, normalize=True)
@@ -36,22 +28,7 @@ class HebbianCarRacingAgent(Individual):
         return last_act_fn(x)
 
     def fitness(self, render=False) -> float:
-        gym.logger.set_level(40)
-        env = gym.make('CarRacingCustom-v0', **self.env_args)
-        env = ResizeObservation(env, 84)
-        obs = env.reset()
-        done = False
-        r_tot = 0
-        neg_r = 0
-        while not done and neg_r < 20:
-            action = self.action(obs)
-            obs, r, done, info = env.step(action)
-            r_tot += r
-            neg_r = neg_r + 1 if r < 0 else 0
-            if render:
-                env.render()
-
-        env.close()
+        r_tot = super().fitness(render)
         wp = t.cat([self.heb1.h.flatten(), self.heb2.h.flatten(), self.heb3.h.flatten()])
         return r_tot - 0.01 * (wp ** 2).mean()
 
@@ -65,7 +42,10 @@ class HebbianCarRacingAgent(Individual):
             'hebb.3': (64, 3, 5),
         }
 
-    def action(self, obs):
-        with t.no_grad():
-            obs = t.tensor(obs / 255.0, dtype=t.float32).permute((2, 0, 1)).unsqueeze(0)
-            return self.net(obs).numpy()
+
+if __name__ == '__main__':
+    # noinspection PyUnresolvedReferences
+    import envs
+
+    agent = HebbianCarRacingAgent({k: 0.1 * t.randn(s) for k, s in HebbianCarRacingAgent.param_shapes().items()}, {})
+    print(agent.fitness(True))

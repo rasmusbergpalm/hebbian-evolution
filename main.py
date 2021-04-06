@@ -11,27 +11,27 @@ from torch.optim.lr_scheduler import MultiplicativeLR
 # noinspection PyUnresolvedReferences
 import envs
 import util
-from hebbian_ant import HebbianAnt
-from meta_agent import MetaAgent
+from agents.meta_agent import MetaAgent
+from agents.racer.static_racer import StaticCarRacingAgent
 
 if __name__ == '__main__':
 
     device = "cuda" if t.cuda.is_available() else "cpu"
 
-    env_args = [
+    train_envs = [
         {},
         # {'side_force': 10.0},
-        # {'side_force': -10.0},
-        # {'friction': 0.5},
-        # {'friction': 2.0}
+        {'side_force': -10.0},
+        {'friction': 0.5},
+        {'friction': 2.0}
     ]
 
-    param_shapes = HebbianAnt.param_shapes()
+    param_shapes = StaticCarRacingAgent.param_shapes()
 
 
     def constructor(params: Dict) -> MetaAgent:
         params = {k: p.detach() for k, p in params.items()}
-        return MetaAgent([HebbianAnt(params, env_arg) for env_arg in env_args])
+        return MetaAgent([StaticCarRacingAgent(params, env_arg) for env_arg in train_envs])
 
 
     population = NormalPopulation(param_shapes, constructor, 0.1, True)
