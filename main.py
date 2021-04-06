@@ -12,7 +12,6 @@ from torch.optim.lr_scheduler import MultiplicativeLR
 import envs
 import util
 from hebbian_ant import HebbianAnt
-from hebbian_racer import HebbianCarRacingAgent
 from meta_agent import MetaAgent
 
 if __name__ == '__main__':
@@ -27,19 +26,19 @@ if __name__ == '__main__':
         # {'friction': 2.0}
     ]
 
-    param_shapes = HebbianCarRacingAgent.param_shapes()
+    param_shapes = HebbianAnt.param_shapes()
 
 
     def constructor(params: Dict) -> MetaAgent:
         params = {k: p.detach() for k, p in params.items()}
-        return MetaAgent([HebbianCarRacingAgent(params, env_arg) for env_arg in env_args])
+        return MetaAgent([HebbianAnt(params, env_arg) for env_arg in env_args])
 
 
     population = NormalPopulation(param_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
 
-    iterations = 300
-    pop_size = 200
+    iterations = 500
+    pop_size = 500
 
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)

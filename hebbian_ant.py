@@ -47,6 +47,7 @@ class HebbianAnt(Individual):
         while True:
             action = self.action(obs)
             if not np.all(np.isfinite(action)):
+                print("NaN")
                 break
             obs, _, done, info = env.step(action)
             r = env.unwrapped.rewards[1]  # Distance walked
@@ -80,4 +81,4 @@ if __name__ == '__main__':
     env = gym.make('AntBulletEnv-v0')
     params = {k: 0.1 * t.randn(s) for k, s in HebbianAnt.param_shapes().items()}
     ant = HebbianAnt(params, {})
-    print(ant.fitness(False))
+    print(ant.fitness(True))
