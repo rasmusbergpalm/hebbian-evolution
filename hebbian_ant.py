@@ -10,10 +10,6 @@ from hebbian_layer import HebbianLayer
 import pybullet_envs
 
 
-def identity(x):
-    return x
-
-
 class HebbianAnt(Individual):
     def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
         self.env_args = env_args
@@ -21,13 +17,13 @@ class HebbianAnt(Individual):
 
         self.heb1 = HebbianLayer(params["hebb.1"], t.tanh)
         self.heb2 = HebbianLayer(params["hebb.2"], t.tanh)
-        self.heb3 = HebbianLayer(params["hebb.3"], identity)
+        self.heb3 = HebbianLayer(params["hebb.3"], t.tanh)
 
     def net(self, x):
         x = self.heb1.forward(x)
         x = self.heb2.forward(x)
         x = self.heb3.forward(x)
-        return t.tanh(x)
+        return x
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
@@ -79,6 +75,6 @@ class HebbianAnt(Individual):
 
 if __name__ == '__main__':
     env = gym.make('AntBulletEnv-v0')
-    params = {k: 0.1 * t.randn(s) for k, s in HebbianAnt.param_shapes().items()}
+    params = {k: t.randn(s) for k, s in HebbianAnt.param_shapes().items()}
     ant = HebbianAnt(params, {})
     print(ant.fitness(True))
