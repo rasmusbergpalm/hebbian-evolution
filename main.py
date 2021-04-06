@@ -12,6 +12,7 @@ from torch.optim.lr_scheduler import MultiplicativeLR
 import envs
 import util
 from agents.meta_agent import MetaAgent
+from agents.racer.hebbian_racer import HebbianCarRacingAgent
 from agents.racer.static_racer import StaticCarRacingAgent
 
 if __name__ == '__main__':
@@ -26,12 +27,13 @@ if __name__ == '__main__':
     ]
     test_env = {'side_force': 10.0}
 
-    param_shapes = StaticCarRacingAgent.param_shapes()
+    agent = HebbianCarRacingAgent
+    param_shapes = agent.param_shapes()
 
 
     def constructor(params: Dict) -> MetaAgent:
         params = {k: p.detach() for k, p in params.items()}
-        return MetaAgent([StaticCarRacingAgent(params, env_arg) for env_arg in train_envs])
+        return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
     population = NormalPopulation(param_shapes, constructor, 0.1, True)
