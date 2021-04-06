@@ -20,11 +20,11 @@ if __name__ == '__main__':
 
     train_envs = [
         {},
-        # {'side_force': 10.0},
         {'side_force': -10.0},
         {'friction': 0.5},
         {'friction': 2.0}
     ]
+    test_env = {'side_force': 10.0}
 
     param_shapes = StaticCarRacingAgent.param_shapes()
 
@@ -37,8 +37,8 @@ if __name__ == '__main__':
     population = NormalPopulation(param_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
 
-    iterations = 500
-    pop_size = 500
+    iterations = 300
+    pop_size = 200
 
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
