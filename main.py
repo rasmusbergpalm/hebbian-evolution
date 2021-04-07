@@ -11,24 +11,22 @@ from torch.optim.lr_scheduler import MultiplicativeLR
 # noinspection PyUnresolvedReferences
 import envs
 import util
+from agents.ant.static_ant import StaticAnt
 from agents.meta_agent import MetaAgent
-from agents.racer.hebbian_racer import HebbianCarRacingAgent
-from agents.racer.rnn_racer import RecurrentCarRacingAgent
-from agents.racer.static_racer import StaticCarRacingAgent
 
 if __name__ == '__main__':
 
     device = "cuda" if t.cuda.is_available() else "cpu"
 
     train_envs = [
-        {},
-        {'side_force': -10.0},
-        {'friction': 0.5},
-        {'friction': 2.0}
+        {'morphology_xml': 'ant.xml'},
+        {'morphology_xml': 'ant-long-back.xml'},
+        {'morphology_xml': 'ant-damage-left.xml'},
+        {'morphology_xml': 'ant-damage-right.xml'},
     ]
-    test_env = {'side_force': 10.0}
+    test_env = {'morphology_xml': 'ant-long-front.xml'},
 
-    agent = RecurrentCarRacingAgent
+    agent = StaticAnt
     param_shapes = agent.param_shapes()
 
 
@@ -40,8 +38,8 @@ if __name__ == '__main__':
     population = NormalPopulation(param_shapes, constructor, 0.1, True)
     population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
 
-    iterations = 300
-    pop_size = 200
+    iterations = 500
+    pop_size = 500
 
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
@@ -76,9 +74,3 @@ if __name__ == '__main__':
             best_so_far = mean_fit
             t.save(all_params, 'best.t')
             util.upload_results('best.t')
-
-        if mean_fit > 900:
-            t.save(all_params, 'sol.t')
-            util.upload_results('sol.t')
-            print("Solved.")
-            break
