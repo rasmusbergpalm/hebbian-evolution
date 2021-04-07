@@ -28,7 +28,7 @@ class RecurrentCarRacingAgent(CarRacingAgent):
             'linear.3': (64, 3),
         }
 
-    def net(self, x):
+    def policy(self, x):
         x = t.tanh(t.conv2d(x, self.params["cnn.1"]))
         x = t.max_pool2d(x, (2, 2))
         x = t.tanh(t.conv2d(x, self.params["cnn.2"], stride=2))

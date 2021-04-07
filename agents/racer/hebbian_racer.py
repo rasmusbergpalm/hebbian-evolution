@@ -16,7 +16,7 @@ class HebbianCarRacingAgent(CarRacingAgent):
         self.heb2 = HebbianLayer(params["hebb.2"], t.tanh, normalize=True)
         self.heb3 = HebbianLayer(params["hebb.3"], identity, normalize=True)
 
-    def net(self, x):
+    def policy(self, x):
         x = t.tanh(t.conv2d(x, self.params["cnn.1"]))
         x = t.max_pool2d(x, (2, 2))
         x = t.tanh(t.conv2d(x, self.params["cnn.2"], stride=2))
