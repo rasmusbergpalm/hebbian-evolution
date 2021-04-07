@@ -27,6 +27,9 @@ class StaticAnt(Ant):
 
 
 if __name__ == '__main__':
+    # noinspection PyUnresolvedReferences
+    import envs
+
     params = {k: 0.1 * t.randn(s) for k, s in StaticAnt.param_shapes().items()}
-    ant = StaticAnt(params, {})
+    ant = StaticAnt(params, {'morphology_xml': 'ant-long-front.xml'})
     print(ant.fitness(True))

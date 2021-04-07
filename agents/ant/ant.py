@@ -16,7 +16,7 @@ class Ant(Individual):
 
     def fitness(self, render=False) -> float:
         gym.logger.set_level(40)
-        env = gym.make('AntBulletEnv-v0', **self.env_args)
+        env = gym.make('CustomAntBulletEnv-v0', **self.env_args)
         if render:
             env.render()
         obs = env.reset()
