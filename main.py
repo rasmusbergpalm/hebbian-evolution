@@ -9,7 +9,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiplicativeLR
 
 import util
-from agents.ant.static_ant import StaticAnt
+from agents.ant.hebbian_ant import HebbianAnt
 from agents.meta_agent import MetaAgent
 
 # noinspection PyUnresolvedReferences
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     ]
     test_env = {'morphology_xml': 'ant-long-front.xml'},
 
-    agent = StaticAnt
+    agent = HebbianAnt
     param_shapes = agent.param_shapes()
 
 
