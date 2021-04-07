@@ -3,10 +3,10 @@ from typing import Dict
 import torch as t
 import torch.nn.functional as f
 
-from agents.ant.ant import Ant
+from agents.ant.base_ant import BaseAnt
 
 
-class StaticAnt(Ant):
+class StaticAnt(BaseAnt):
     def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
         super().__init__(env_args)
         self.params = params

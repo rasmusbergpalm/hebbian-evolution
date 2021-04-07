@@ -8,11 +8,12 @@ from evostrat import NormalPopulation, compute_centered_ranks, normalize
 from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiplicativeLR
 
-# noinspection PyUnresolvedReferences
-import envs
 import util
 from agents.ant.static_ant import StaticAnt
 from agents.meta_agent import MetaAgent
+
+# noinspection PyUnresolvedReferences
+import envs
 
 if __name__ == '__main__':
 

@@ -1,9 +1,10 @@
+import glob
 import os
-from shutil import copytree, copy
+from shutil import copy
 
 import gym
 import pybullet_data
-import glob
+
 from envs.car_racing import CarRacing
 from envs.custom_ant import CustomAntBulletEnv
 

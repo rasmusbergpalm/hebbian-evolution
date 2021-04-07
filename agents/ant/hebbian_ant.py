@@ -1,15 +1,12 @@
 from typing import Dict
 
-import gym
-# noinspection PyUnresolvedReferences
-import pybullet_envs
 import torch as t
 
-from agents.ant.ant import Ant
+from agents.ant.base_ant import BaseAnt
 from hebbian_layer import HebbianLayer
 
 
-class HebbianAnt(Ant):
+class HebbianAnt(BaseAnt):
     def __init__(self, params: Dict[str, t.Tensor], env_args: Dict):
         super().__init__(env_args)
         self.params = params

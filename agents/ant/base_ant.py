@@ -1,13 +1,11 @@
 from typing import Dict
 
 import gym
-# noinspection PyUnresolvedReferences
-import pybullet_envs
 import torch as t
 from evostrat import Individual
 
 
-class Ant(Individual):
+class BaseAnt(Individual):
     def __init__(self, env_args: Dict):
         self.env_args = env_args
 
