@@ -13,6 +13,7 @@ import envs
 import util
 from agents.meta_agent import MetaAgent
 from agents.racer.hebbian_racer import HebbianCarRacingAgent
+from agents.racer.rnn_racer import RecurrentCarRacingAgent
 from agents.racer.static_racer import StaticCarRacingAgent
 
 if __name__ == '__main__':
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     ]
     test_env = {'side_force': 10.0}
 
-    agent = HebbianCarRacingAgent
+    agent = RecurrentCarRacingAgent
     param_shapes = agent.param_shapes()
 
 
