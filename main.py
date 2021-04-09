@@ -14,20 +14,30 @@ from agents.meta_agent import MetaAgent
 
 # noinspection PyUnresolvedReferences
 import envs
+from agents.racer.hebbian_racer import HebbianCarRacingAgent
+from mixed_normal_gmm_population import MixedNormalAndGMMPopulation
 
 if __name__ == '__main__':
 
     device = "cuda" if t.cuda.is_available() else "cpu"
 
-    train_envs = [
+    ant_train_envs = [
         {'morphology_xml': 'ant.xml'},
         {'morphology_xml': 'ant-long-back.xml'},
         {'morphology_xml': 'ant-damage-left.xml'},
         {'morphology_xml': 'ant-damage-right.xml'},
     ]
-    test_env = {'morphology_xml': 'ant-long-front.xml'},
+    ant_test_env = {'morphology_xml': 'ant-long-front.xml'},
+    car_train_envs = [
+        {},
+        {'side_force': -10.0},
+        {'friction': 0.5},
+        {'friction': 2.0}
+    ]
+    car_est_env = {'side_force': 10.0}
 
-    agent = HebbianAnt
+    train_envs = car_train_envs
+    agent = HebbianCarRacingAgent
     param_shapes = agent.param_shapes()
 
 
@@ -37,12 +47,15 @@ if __name__ == '__main__':
 
 
     rho = 128
-    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
-    population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
-    population.mixing_logits = {k: t.randn(ml.shape, requires_grad=True, device=ml.device) for k, ml in population.mixing_logits.items()}
+    norm_shapes = {k: v for k, v in param_shapes.items() if not k.startswith('hebb')}
+    gmm_shapes = {k: v[:-1] for k, v in param_shapes.items() if k.startswith('hebb')}
+    n_rules = int(sum([t.Size(s).numel() for s in gmm_shapes.values()]) / rho)
+    population = MixedNormalAndGMMPopulation(norm_shapes, gmm_shapes, constructor, 0.1, (n_rules, 5), device)
 
-    iterations = 500
-    pop_size = 500
+    # population.mixing_logits = {k: t.randn(ml.shape, requires_grad=True, device=ml.device) for k, ml in population.mixing_logits.items()}
+
+    iterations = 300
+    pop_size = 200
 
     optim = SGD(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
