@@ -36,16 +36,20 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    population = NormalPopulation(param_shapes, constructor, 0.1, True)
-    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
+    n_steps = 211
+    best_so_far = 977.3
+    params = t.load('../dc83f87/best.t')
+    population = NormalPopulation(param_shapes, constructor, 0.1 * 0.999 ** n_steps, True)
+    for k, p in zip(population.param_means.keys(), params):
+        population.param_means[k] = p
 
     iterations = 500
     pop_size = 500
 
-    optim = SGD(population.parameters(), lr=0.2)
+    optim = SGD(population.parameters(), lr=0.2 * 0.995 ** n_steps)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
-    pbar = tqdm.tqdm(range(iterations))
-    best_so_far = -1e9
+    pbar = tqdm.tqdm(range(n_steps + 1, iterations))
+
     train_writer, test_writer = util.get_writers('hebbian')
 
 
