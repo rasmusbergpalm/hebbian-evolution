@@ -39,6 +39,7 @@ if __name__ == '__main__':
     rho = 128
     n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
+    population.mixing_logits = {k: t.randn(ml.shape, requires_grad=True, device=ml.device) for k, ml in population.mixing_logits.items()}
 
     iterations = 500
     pop_size = 500
