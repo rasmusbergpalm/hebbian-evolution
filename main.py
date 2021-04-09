@@ -80,7 +80,8 @@ if __name__ == '__main__':
 
         optim.step()
         sched.step()
-        population.std *= 0.999
+        population.gmm_pop.std *= 0.999
+        population.normal_pop.std *= 0.999
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
