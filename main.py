@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
 
     def constructor(params: Dict) -> MetaAgent:
-        params = {k: p.detach() for k, p in params.items()}
+        params = {k: p.detach().to("cpu") for k, p in params.items()}
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
