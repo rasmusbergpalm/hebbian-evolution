@@ -4,12 +4,12 @@ from typing import Dict
 
 import torch as t
 import tqdm
-from evostrat import NormalPopulation, compute_centered_ranks, normalize
+from evostrat import compute_centered_ranks, normalize, GaussianMixturePopulation
 from torch.optim import SGD
 from torch.optim.lr_scheduler import MultiplicativeLR
 
 import util
-from agents.ant.rnn_ant import RecurrentAnt
+from agents.ant.hebbian_ant import HebbianAnt
 from agents.meta_agent import MetaAgent
 
 # noinspection PyUnresolvedReferences
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     ]
     test_env = {'morphology_xml': 'ant-long-front.xml'},
 
-    agent = RecurrentAnt
+    agent = HebbianAnt
     param_shapes = agent.param_shapes()
 
 
@@ -36,8 +36,9 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    population = NormalPopulation(param_shapes, constructor, 0.1, True)
-    population.param_means = {k: t.randn(shape, requires_grad=True, device=device) for k, shape in param_shapes.items()}  # pop mean init hack
+    rho = 128
+    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
 
     iterations = 500
     pop_size = 500
@@ -65,7 +66,7 @@ if __name__ == '__main__':
 
         optim.step()
         sched.step()
-        population.param_logstds = {k: t.log(t.exp(logstd) * 0.999) for k, logstd in population.param_logstds.items()}  # sigma decay hack
+        population.std *= 0.999
         mean_fit = raw_fitness.mean().item()
         pbar.set_description("avg fit: %.3f, std: %.3f" % (mean_fit, raw_fitness.std().item()))
 
