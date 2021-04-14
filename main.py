@@ -43,7 +43,7 @@ if __name__ == '__main__':
     iterations = 500
     pop_size = 500
 
-    optim = SGD(population.parameters(), lr=0.01)
+    optim = Adam(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
