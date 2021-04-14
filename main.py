@@ -5,7 +5,7 @@ from typing import Dict
 import torch as t
 import tqdm
 from evostrat import compute_centered_ranks, normalize, GaussianMixturePopulation
-from torch.optim import SGD
+from torch.optim import SGD, Adam
 from torch.optim.lr_scheduler import MultiplicativeLR
 
 import util
@@ -37,13 +37,13 @@ if __name__ == '__main__':
 
 
     rho = 128
-    n_rules = 16  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
 
     iterations = 500
     pop_size = 500
 
-    optim = SGD(population.parameters(), lr=0.2)
+    optim = SGD(population.parameters(), lr=0.01)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
