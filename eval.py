@@ -9,7 +9,6 @@ from agents.racer.static_racer import StaticCarRacingAgent
 
 import envs
 
-
 if __name__ == '__main__':
     device = "cuda" if t.cuda.is_available() else "cpu"
 
@@ -32,7 +31,7 @@ if __name__ == '__main__':
         return agent(params, test_env)
 
 
-    population = NormalPopulation(param_shapes, constructor, 0.1*0.999**300, True)
+    population = NormalPopulation(param_shapes, constructor, 1e-9, True)
     for k, p in zip(population.param_means.keys(), params):
         population.param_means[k] = p
 
