@@ -69,7 +69,7 @@ if __name__ == '__main__':
         means = population.component_means  # (480, 5)
         dist = ((means.unsqueeze(0) - means.unsqueeze(1)) ** 2).sum(dim=2).sqrt()  # (1, 480, 5,) - (480, 1, 5) = (480, 480, 5)
         train_writer.add_histogram("dist", dist, i)
-        train_writer.add_image("dist", dist, i, dataformats="HW")
+        train_writer.add_image("dist_img", dist, i, dataformats="HW")
 
         optim.step()
         sched.step()
