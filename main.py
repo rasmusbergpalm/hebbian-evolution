@@ -21,9 +21,9 @@ if __name__ == '__main__':
 
     train_envs = [
         {'morphology_xml': 'ant.xml'},
-        # {'morphology_xml': 'ant-long-back.xml'},
-        # {'morphology_xml': 'ant-damage-left.xml'},
-        # {'morphology_xml': 'ant-damage-right.xml'},
+        {'morphology_xml': 'ant-long-back.xml'},
+        {'morphology_xml': 'ant-damage-left.xml'},
+        {'morphology_xml': 'ant-damage-right.xml'},
     ]
     test_env = {'morphology_xml': 'ant-long-front.xml'},
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    rho = 256
+    rho = 128
     n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
 
@@ -63,6 +63,13 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
         for p_idx, p in enumerate(population.parameters()):
             train_writer.add_histogram('grads/%d' % p_idx, p.grad, i)
+        for k, p in population.mixing_logits:
+            train_writer.add_histogram("entropy/%d" % k, t.distributions.Categorical(logits=p).entropy(), i)
+
+        means = population.component_means  # (480, 5)
+        dist = ((means.unsqueeze(0) - means.unsqueeze(1)) ** 2).sum(dim=2).sqrt()  # (1, 480, 5,) - (480, 1, 5) = (480, 480, 5)
+        train_writer.add_histogram("dist", dist, i)
+        train_writer.add_image("dist", dist, i, dataformats="HW")
 
         optim.step()
         sched.step()
