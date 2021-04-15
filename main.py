@@ -37,14 +37,14 @@ if __name__ == '__main__':
 
 
     # rho = 256
-    n_rules = 1  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    n_rules = 16  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
     # population.component_means = t.tensor(10 * population.component_means.detach(), requires_grad=True, device=device)
 
     iterations = 500
     pop_size = 500
 
-    optim = SGD(population.parameters(), lr=0.2)
+    optim = Adam(population.parameters(), lr=0.2)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
