@@ -36,15 +36,14 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    # rho = 256
-    n_rules = 16  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    rho = 128
+    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
-    # population.component_means = t.tensor(10 * population.component_means.detach(), requires_grad=True, device=device)
 
     iterations = 500
     pop_size = 500
 
-    optim = Adam(population.parameters(), lr=0.2)
+    optim = Adam(population.parameters(), lr=1.0)
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
