@@ -64,6 +64,12 @@ if __name__ == '__main__':
         train_writer.add_scalar('fitness/std', raw_fitness.std(), i)
         for p_idx, p in enumerate(population.parameters()):
             train_writer.add_histogram('grads/%d' % p_idx, p.grad, i)
+        for k, p in population.mixing_logits.items():
+            train_writer.add_histogram("entropy/%s" % k, t.distributions.Categorical(logits=p).entropy(), i)
+
+        means = population.component_means  # (480, 5)
+        dist = ((means.unsqueeze(0) - means.unsqueeze(1)) ** 2).sum(dim=2).sqrt()  # (1, 480, 5,) - (480, 1, 5) = (480, 480, 5)
+        train_writer.add_histogram("dist", dist, i)
 
         optim.step()
         sched.step()
