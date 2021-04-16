@@ -43,7 +43,7 @@ if __name__ == '__main__':
     iterations = 500
     pop_size = 500
 
-    optim = SGD(population.parameters(), lr=0.02)
+    optim = SGD(population.parameters(), lr=0.2)
     lr_decay = 0.995  # t.exp(t.log(t.scalar_tensor(0.5)) / 100)  # halves every 100 steps
     sched = MultiplicativeLR(optim, lr_lambda=lambda step: lr_decay)
     pbar = tqdm.tqdm(range(iterations))
