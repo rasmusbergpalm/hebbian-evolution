@@ -10,11 +10,7 @@ import envs
 if __name__ == '__main__':
     device = "cuda" if t.cuda.is_available() else "cpu"
     envs = [
-        {},
-        # {'friction': 0.5},
-        # {'friction': 2.0},
-        # {'side_force': -10.0},
-        # {'side_force': 10.0}
+        {"morphology_xml": "ant.xml"}
     ]
     test_env = None
     agent = HebbianAnt
