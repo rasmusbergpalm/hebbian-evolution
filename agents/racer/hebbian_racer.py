@@ -30,7 +30,7 @@ class HebbianCarRacingAgent(CarRacingAgent):
     def fitness(self, render=False) -> float:
         r_tot = super().fitness(render)
         wp = t.cat([self.heb1.h.flatten(), self.heb2.h.flatten(), self.heb3.h.flatten()])
-        return r_tot - 0.01 * (wp ** 2).mean()
+        return r_tot - 0.00 * (wp ** 2).mean()
 
     @staticmethod
     def param_shapes() -> Dict[str, t.Tensor]:
