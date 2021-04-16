@@ -2,6 +2,8 @@ from typing import Dict
 import numpy as np
 import torch as t
 from evostrat import NormalPopulation, GaussianMixturePopulation
+
+from agents.ant.hebbian_ant import HebbianAnt
 from agents.racer.hebbian_racer import HebbianCarRacingAgent
 import envs
 
@@ -15,7 +17,7 @@ if __name__ == '__main__':
         # {'side_force': 10.0}
     ]
     test_env = None
-    agent = HebbianCarRacingAgent
+    agent = HebbianAnt
     param_shapes = agent.param_shapes()
     params = t.load('../8231ab7/best.t', map_location=t.device('cpu'))
 
