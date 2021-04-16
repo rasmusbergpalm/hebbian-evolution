@@ -36,8 +36,8 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    rho = 64
-    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    # rho = 64
+    n_rules = 1  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
     # population.component_means = t.tensor(10 * population.component_means.detach(), requires_grad=True, device=device)
 
@@ -53,7 +53,6 @@ if __name__ == '__main__':
 
     def fitness_shaping(x):
         return normalize(compute_centered_ranks(x))
-
 
 
     for i in pbar:
