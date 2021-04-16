@@ -21,9 +21,9 @@ if __name__ == '__main__':
 
     train_envs = [
         {'morphology_xml': 'ant.xml'},
-        {'morphology_xml': 'ant-long-back.xml'},
-        {'morphology_xml': 'ant-damage-left.xml'},
-        {'morphology_xml': 'ant-damage-right.xml'},
+        # {'morphology_xml': 'ant-long-back.xml'},
+        # {'morphology_xml': 'ant-damage-left.xml'},
+        # {'morphology_xml': 'ant-damage-right.xml'},
     ]
     test_env = {'morphology_xml': 'ant-long-front.xml'},
 
@@ -44,7 +44,8 @@ if __name__ == '__main__':
     pop_size = 500
 
     optim = Adam(population.parameters(), lr=1.0)
-    sched = MultiplicativeLR(optim, lr_lambda=lambda step: 0.995)
+    lr_decay = t.exp(t.log(t.scalar_tensor(0.5)) / 100)  # halves every 100 steps
+    sched = MultiplicativeLR(optim, lr_lambda=lambda step: lr_decay)
     pbar = tqdm.tqdm(range(iterations))
     best_so_far = -1e9
     train_writer, test_writer = util.get_writers('hebbian')
