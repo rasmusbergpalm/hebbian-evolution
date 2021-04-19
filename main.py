@@ -36,8 +36,8 @@ if __name__ == '__main__':
         return MetaAgent([agent(params, env_arg) for env_arg in train_envs])
 
 
-    # rho = 128
-    n_rules = 1  # int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
+    rho = 16
+    n_rules = int(sum([t.Size(s).numel() for s in param_shapes.values()]) / rho)
     population = GaussianMixturePopulation({k: t.Size(v[:-1]) for k, v in param_shapes.items()}, (n_rules, 5), constructor, 0.1, device)
 
     iterations = 500
